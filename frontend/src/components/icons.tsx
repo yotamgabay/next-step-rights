@@ -161,6 +161,34 @@ export const UserIcon = (p: IconProps): JSX.Element => (
   </Stroke>
 );
 
+/** Clipboard with check marks — used for the claim tracker. */
+export const TrackerIcon = (p: IconProps): JSX.Element => (
+  <Stroke {...p}>
+    <path d="M9 3h6a1 1 0 0 1 1 1v1H8V4a1 1 0 0 1 1-1Z" />
+    <path d="M8 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+    <path d="m8.5 12.5 1.5 1.5 3-3" />
+    <path d="M16 16.5h-3" />
+  </Stroke>
+);
+
+/** Trash can — delete affordance for tasks. */
+export const TrashIcon = (p: IconProps): JSX.Element => (
+  <Stroke {...p}>
+    <path d="M4 7h16" />
+    <path d="M10 11v6M14 11v6" />
+    <path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13" />
+    <path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" />
+  </Stroke>
+);
+
+/** Plus sign — add custom task. */
+export const PlusIcon = (p: IconProps): JSX.Element => (
+  <Stroke {...p}>
+    <line x1="12" y1="5" x2="12" y2="19" />
+    <line x1="5" y1="12" x2="19" y2="12" />
+  </Stroke>
+);
+
 export const GoogleIcon = ({ size = 22, style }: IconProps): JSX.Element => (
   <svg width={size} height={size} viewBox="0 0 48 48" style={style} aria-hidden="true">
     <path

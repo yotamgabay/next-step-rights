@@ -1,17 +1,18 @@
 import type { JSX } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { colors, maxWidth } from '../theme';
-import { ChatIcon, FileIcon, HomeIcon, UserIcon } from './icons';
+import { ChatIcon, FileIcon, HomeIcon, TrackerIcon, UserIcon } from './icons';
 import { Logo } from './Logo';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../api/supabase';
 
-type Section = 'home' | 'chat' | 'rights' | 'other';
+type Section = 'home' | 'chat' | 'rights' | 'tracker' | 'other';
 
 function sectionFor(pathname: string): Section {
   if (pathname === '/') return 'home';
   if (pathname.startsWith('/chat')) return 'chat';
   if (pathname.startsWith('/rights')) return 'rights';
+  if (pathname.startsWith('/tracker')) return 'tracker';
   return 'other';
 }
 
@@ -85,6 +86,11 @@ function Header(): JSX.Element {
           <button onClick={() => navigate('/rights')} aria-current={section === 'rights' ? 'page' : undefined} style={navButtonStyle(section === 'rights')}>
             הזכויות שלי
           </button>
+          {session ? (
+            <button onClick={() => navigate('/tracker')} aria-current={section === 'tracker' ? 'page' : undefined} style={navButtonStyle(section === 'tracker')}>
+              המעקב שלי
+            </button>
+          ) : null}
         </nav>
         <div
           className="app-header-auth"
@@ -171,6 +177,7 @@ function Header(): JSX.Element {
 
 function Footer(): JSX.Element {
   const navigate = useNavigate();
+  const { session } = useAuth();
   const linkStyle: React.CSSProperties = {
     background: 'none',
     border: 'none',
@@ -216,6 +223,11 @@ function Footer(): JSX.Element {
               <button onClick={() => navigate('/rights')} style={linkStyle}>
                 הזכויות שלי
               </button>
+              {session ? (
+                <button onClick={() => navigate('/tracker')} style={linkStyle}>
+                  המעקב שלי
+                </button>
+              ) : null}
             </div>
           </nav>
           <div>
@@ -289,6 +301,12 @@ function BottomNav(): JSX.Element {
         זכויות
       </button>
       {session ? (
+        <button onClick={() => navigate('/tracker')} aria-current={section === 'tracker' ? 'page' : undefined} style={bottomNavStyle(section === 'tracker')}>
+          <TrackerIcon size={24} />
+          מעקב
+        </button>
+      ) : null}
+      {session ? (
         <button onClick={() => supabase.auth.signOut()} style={bottomNavStyle(false)}>
           <UserIcon size={24} />
           יציאה
@@ -310,7 +328,7 @@ function BottomNav(): JSX.Element {
  */
 export function Layout(): JSX.Element {
   const section = sectionFor(useLocation().pathname);
-  const showFooter = section === 'home' || section === 'rights';
+  const showFooter = section === 'home' || section === 'rights' || section === 'tracker';
   return (
     <div
       dir="rtl"
