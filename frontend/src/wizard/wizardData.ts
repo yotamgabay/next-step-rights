@@ -67,7 +67,7 @@ const causeOptions: readonly StepOption[] = [
   { key: 'work', label: 'תאונה במקום העבודה' },
   { key: 'road_accident', label: 'תאונת דרכים', desc: 'חוק הפלת״ד' },
   { key: 'disease', label: 'מחלה', desc: 'כלי דם, סוכרת, סרטן, CRPS, זיהום' },
-  { key: 'birth_other', label: 'מלידה / רפואי — אחר' },
+  { key: 'birth_other', label: 'מלידה / רפואי - אחר' },
 ];
 
 const insurerOptions: readonly StepOption[] = [
@@ -138,14 +138,14 @@ export function buildSteps(answers: WizardAnswers): StepDef[] {
   const steps: StepDef[] = [
     { id: 'cause', kind: 'single', title: 'מה הסיבה לקטיעה?', help: 'מקור הפגיעה קובע את הגורם המטפל ואת סוג התביעה.', skippable: false, options: causeOptions },
     { id: 'insurer', kind: 'single', title: 'מי הגורם המבטח / המפצה?', help: 'הגוף שמולו מתנהלת התביעה ומשלמים ההטבות.', skippable: false, options: insurerOptions },
-    { id: 'limbs', kind: 'multi', title: 'אילו גפיים נפגעו?', help: 'אפשר לבחור יותר מאחת — נמשיך לפרט כל אחת.', skippable: false, options: limbOptions },
+    { id: 'limbs', kind: 'multi', title: 'אילו גפיים נפגעו?', help: 'אפשר לבחור יותר מאחת - נמשיך לפרט כל אחת.', skippable: false, options: limbOptions },
   ];
 
   for (const slot of selectedSlots(answers)) {
     steps.push({
       id: `level:${slot}`,
       kind: 'single',
-      title: `מה גובה הקטיעה — ${limbSlotLabels[slot]}?`,
+      title: `מה גובה הקטיעה - ${limbSlotLabels[slot]}?`,
       help: 'בחר/י את הרמה המתאימה.',
       skippable: false,
       options: levelOptionsForSlot(slot),
@@ -167,7 +167,7 @@ export function buildSteps(answers: WizardAnswers): StepDef[] {
 
   steps.push(
     { id: 'phantomPain', kind: 'single', title: 'האם יש כאבי פנטום?', help: 'מקרה קצה שמשפיע על הזכאות.', skippable: false, options: yesNoOptions },
-    { id: 'crps', kind: 'single', title: 'האם אובחן CRPS?', help: 'תסמונת כאב מורכבת — מקרה קצה רפואי.', skippable: false, options: yesNoOptions },
+    { id: 'crps', kind: 'single', title: 'האם אובחן CRPS?', help: 'תסמונת כאב מורכבת - מקרה קצה רפואי.', skippable: false, options: yesNoOptions },
     { id: 'prosthetic', kind: 'single', title: 'האם את/ה מסתייע/ת בתותבת?', help: 'קובע אילו מסלולי אביזרים ומענקים רלוונטיים.', skippable: false, options: prostheticOptions },
     { id: 'education', kind: 'single', title: 'מה רמת ההשכלה?', help: 'משפיע על אפיקי שיקום מקצועי והכשרות.', skippable: false, options: educationOptions },
     { id: 'gender', kind: 'single', title: 'מהו המגדר?', help: '', skippable: false, options: genderOptions },
@@ -233,7 +233,7 @@ export function causeToTopic(cause: DbCause | ''): TopicId | null {
 }
 
 const authorityNameByCause: Record<DbCause, string> = {
-  army: 'משרד הביטחון — אגף השיקום',
+  army: 'משרד הביטחון - אגף השיקום',
   terror: 'הרשות לנפגעי פעולות איבה',
   work: 'המוסד לביטוח לאומי',
   road_accident: 'חברת הביטוח של הרכב (חוק הפלת״ד)',
@@ -269,7 +269,7 @@ export function profileLine(answers: WizardAnswers): string {
   return selectedSlots(answers)
     .map((slot) => {
       const level = answers.levels[slot];
-      const levelText = level ? ` — ${levelLabel(level)}` : '';
+      const levelText = level ? ` - ${levelLabel(level)}` : '';
       return `${limbSlotLabels[slot]}${levelText}`;
     })
     .join(' · ');

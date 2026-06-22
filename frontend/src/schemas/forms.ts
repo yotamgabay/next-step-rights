@@ -24,6 +24,29 @@ export const signupSchema = z.object({
 });
 export type SignupValues = z.infer<typeof signupSchema>;
 
+const phone = z
+  .string()
+  .trim()
+  .min(1, 'יש להזין מספר טלפון')
+  .refine((value) => value.replace(/\D/g, '').length >= 9, 'מספר טלפון לא תקין');
+
+const age = z
+  .string()
+  .trim()
+  .min(1, 'יש להזין גיל')
+  .refine((value) => {
+    const n = Number(value);
+    return Number.isFinite(n) && n >= 1 && n <= 120;
+  }, 'יש להזין גיל תקין');
+
+/** Extra fields collected when completing an OAuth-started signup. */
+export const completeProfileSchema = z.object({
+  phone,
+  age,
+  amputationType: z.string().min(1, 'יש לבחור אפשרות'),
+});
+export type CompleteProfileValues = z.infer<typeof completeProfileSchema>;
+
 /**
  * Runs a schema and returns a flat record of field -> first error message,
  * keyed by the schema's own field names. Empty object means valid.

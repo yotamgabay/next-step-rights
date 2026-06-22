@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "React frontend for הצעד הבא — RTL Hebrew rights portal for limb amputees.",
+  "description": "React frontend for הצעד הבא - RTL Hebrew rights portal for limb amputees.",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

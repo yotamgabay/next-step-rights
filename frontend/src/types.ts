@@ -25,7 +25,7 @@ export type TopicId =
   | 'financial'
   | 'mobility';
 
-/** A cause of amputation — drives the handling authority. */
+/** A cause of amputation - drives the handling authority. */
 export type CauseId = 'medical' | 'work' | 'road' | 'military';
 
 export type ChatRole = 'bot' | 'user';
@@ -42,7 +42,7 @@ export interface ChatMessage {
  * children.
  */
 
-/** Amputation cause — matches the DB `amputation_cause` enum. */
+/** Amputation cause - matches the DB `amputation_cause` enum. */
 export type DbCause = 'army' | 'terror' | 'work' | 'road_accident' | 'disease' | 'birth_other';
 
 /** Insuring/compensating body as chosen in the wizard (resolved to the DB enum on save). */

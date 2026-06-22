@@ -70,7 +70,7 @@ function Header(): JSX.Element {
       >
         <button
           onClick={() => navigate('/')}
-          aria-label="הצעד הבא — לדף הבית"
+          aria-label="הצעד הבא - לדף הבית"
           style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
         >
           <Logo height={44} onDark />
@@ -111,17 +111,17 @@ function Header(): JSX.Element {
               ) : null}
               <button
                 onClick={() => supabase.auth.signOut()}
-              style={{
-                height: 44,
-                padding: '0 22px',
-                borderRadius: 22,
-                border: '1.5px solid rgba(255,255,255,.6)',
-                background: 'transparent',
-                color: colors.white,
-                fontSize: 16,
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
+                style={{
+                  height: 44,
+                  padding: '0 22px',
+                  borderRadius: 22,
+                  border: '1.5px solid rgba(255,255,255,.6)',
+                  background: 'transparent',
+                  color: colors.white,
+                  fontSize: 16,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
               >
                 התנתקות
               </button>
@@ -198,7 +198,7 @@ function Footer(): JSX.Element {
             <Logo height={46} onDark />
           </div>
           <p style={{ fontSize: 16, lineHeight: 1.6, margin: 0, color: 'rgba(255,255,255,.78)' }}>
-            הבית של קטועי הגפיים בישראל — כדי שכל אחד יוכל להבין את הזכויות שלו ולממש אותן בקלות.
+            הבית של קטועי הגפיים בישראל - כדי שכל אחד יוכל להבין את הזכויות שלו ולממש אותן בקלות.
           </p>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 48 }}>

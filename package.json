@@ -2,7 +2,7 @@
   "name": "next-step-rights",
   "version": "1.0.0",
   "private": true,
-  "description": "הצעד הבא — rights portal for limb amputees in Israel (RTL Hebrew). React + TypeScript frontend with an Express backend service.",
+  "description": "הצעד הבא - rights portal for limb amputees in Israel (RTL Hebrew). React + TypeScript frontend with an Express backend service.",
   "workspaces": [
     "frontend",
     "backend"
