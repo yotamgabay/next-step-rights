@@ -141,7 +141,9 @@ export function Chat(): JSX.Element {
             <ChatIcon size={26} color={colors.white} />
           </span>
           <div style={{ flex: 1, minWidth: 160 }}>
-            <div style={{ fontSize: 19, fontWeight: 700, color: colors.darkBlue }}>העוזר הדיגיטלי</div>
+            <h1 style={{ fontSize: 19, fontWeight: 700, color: colors.darkBlue, margin: 0 }}>
+              העוזר הדיגיטלי
+            </h1>
             <div style={{ fontSize: 15, color: colors.textFaint }}>
               עונה על שאלות בנושא זכויות קטועי גפיים
             </div>
@@ -247,7 +249,7 @@ export function Chat(): JSX.Element {
             border: `1.5px solid ${colors.blueTintBorder}`,
             borderRadius: 18,
             padding: 9,
-            boxShadow: '0 8px 26px rgba(13,61,94,.12)',
+            boxShadow: '0 4px 16px rgba(13,61,94,.10)',
           }}
         >
           <input

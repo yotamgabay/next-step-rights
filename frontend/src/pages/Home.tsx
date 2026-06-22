@@ -222,7 +222,7 @@ export function Home(): JSX.Element {
               border: `1.5px solid ${colors.blueTintBorder}`,
               borderRadius: 18,
               padding: 9,
-              boxShadow: '0 8px 26px rgba(13,61,94,.10)',
+              boxShadow: '0 4px 16px rgba(13,61,94,.08)',
             }}
           >
             <input

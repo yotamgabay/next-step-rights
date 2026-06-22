@@ -96,7 +96,7 @@ function OptionRow({ option, selected, showChevron, onClick }: OptionRowProps): 
       </span>
       <span style={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'flex-start', flex: 1 }}>
         <span style={{ fontSize: 19, fontWeight: 700, color: colors.darkBlue }}>{option.label}</span>
-        {option.desc ? <span style={{ fontSize: 15, color: '#777' }}>{option.desc}</span> : null}
+        {option.desc ? <span style={{ fontSize: 15, color: colors.textFaint }}>{option.desc}</span> : null}
       </span>
       {showChevron ? <ChevronLeftIcon size={20} color={colors.primaryBlue} style={{ flex: 'none' }} /> : null}
     </button>
@@ -114,7 +114,7 @@ function ContinueButton({ disabled, onClick }: { disabled: boolean; onClick: () 
         height: 52,
         border: 'none',
         borderRadius: 26,
-        background: disabled ? colors.placeholder : colors.primaryBlue,
+        background: disabled ? colors.disabledControl : colors.primaryBlue,
         color: colors.white,
         fontSize: 17,
         fontWeight: 700,

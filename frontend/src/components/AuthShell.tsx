@@ -61,7 +61,7 @@ export const authCardStyle: React.CSSProperties = {
   border: `1px solid ${colors.border}`,
   borderRadius: 16,
   padding: '34px 30px',
-  boxShadow: '0 10px 30px rgba(13,61,94,.08)',
+  boxShadow: '0 4px 18px rgba(13,61,94,.07)',
 };
 
 interface OAuthButtonsProps {

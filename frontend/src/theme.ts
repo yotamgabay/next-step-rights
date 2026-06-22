@@ -21,8 +21,13 @@ export const colors = {
 
   text: '#333333',
   textMuted: '#555555',
-  textFaint: '#7A7A7A',
-  placeholder: '#AAAAAA',
+  // Darkened from #7A7A7A (≈4.0:1, failed WCAG AA) to ≈6.2:1 on the page bg so
+  // hints, captions and disclaimers stay legible — this is a rights portal.
+  textFaint: '#5E5E5E',
+  // Placeholder text must clear 4.5:1 like body text; #AAAAAA was ≈2.3:1.
+  placeholder: '#737373',
+  // Background for busy/disabled controls (was reusing the placeholder gray).
+  disabledControl: '#9AA3AB',
 
   border: '#DDDDDD',
   borderSoft: '#E4E4E4',

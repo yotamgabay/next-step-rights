@@ -42,7 +42,7 @@ function bottomNavStyle(active: boolean): React.CSSProperties {
     cursor: 'pointer',
     fontSize: 12,
     fontWeight: 600,
-    color: active ? colors.primaryBlue : 'rgba(255,255,255,.55)',
+    color: active ? colors.primaryBlue : 'rgba(255,255,255,.74)',
     padding: '0 2px',
     minHeight: 44,
   };
@@ -250,7 +250,7 @@ function Footer(): JSX.Element {
             margin: '0 auto',
             padding: '18px 24px',
             fontSize: 14,
-            color: 'rgba(255,255,255,.6)',
+            color: 'rgba(255,255,255,.74)',
             lineHeight: 1.5,
           }}
         >
@@ -325,8 +325,11 @@ export function Layout(): JSX.Element {
         background: colors.pageBg,
       }}
     >
+      <a href="#main" className="skip-link">
+        דילוג לתוכן הראשי
+      </a>
       <Header />
-      <main style={{ flex: '1 0 auto' }}>
+      <main id="main" style={{ flex: '1 0 auto' }}>
         <Outlet />
       </main>
       {showFooter ? <Footer /> : null}

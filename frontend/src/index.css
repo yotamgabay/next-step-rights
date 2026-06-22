@@ -26,7 +26,26 @@ body {
 }
 
 ::placeholder {
-  color: #aaaaaa;
+  color: #737373;
+  opacity: 1; /* Firefox dims placeholders by default; keep our AA-checked value. */
+}
+
+/* Skip link: hidden until keyboard focus, then pinned top-start (RTL-aware). */
+.skip-link {
+  position: absolute;
+  inset-inline-start: 12px;
+  top: -56px;
+  z-index: 100;
+  background: var(--primary-blue);
+  color: #fff;
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: top 0.15s ease;
+}
+.skip-link:focus {
+  top: 12px;
 }
 
 button,
