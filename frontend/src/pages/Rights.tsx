@@ -1,4 +1,5 @@
 import type { JSX } from 'react';
+import { EligibleRights } from '../components/EligibleRights';
 import { useNavigate } from 'react-router-dom';
 import { CardButton, DetailsArrow, Tag } from '../components/Card';
 import { causeIds, quickIds, topics } from '../data/topics';
@@ -10,8 +11,10 @@ export function Rights(): JSX.Element {
   const openTopic = (id: TopicId): void => navigate(`/rights/${id}`, { state: { from: 'rights' } });
 
   return (
-    <div style={{ maxWidth, margin: '0 auto', padding: '48px 24px' }}>
-      <h1
+    <>
+      <EligibleRights />
+      <div style={{ maxWidth, margin: '0 auto', padding: '48px 24px' }}>
+        <h1
         style={{
           fontSize: 'clamp(26px,3vw,34px)',
           color: colors.darkBlue,
@@ -75,6 +78,7 @@ export function Rights(): JSX.Element {
           );
         })}
       </div>
-    </div>
+      </div>
+    </>
   );
 }
