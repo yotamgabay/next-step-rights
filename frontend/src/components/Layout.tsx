@@ -75,14 +75,14 @@ function Header(): JSX.Element {
         >
           <Logo height={44} onDark />
         </button>
-        <nav className="desktop-nav" style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-          <button onClick={() => navigate('/')} style={navButtonStyle(section === 'home')}>
+        <nav className="desktop-nav" aria-label="ניווט ראשי" style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          <button onClick={() => navigate('/')} aria-current={section === 'home' ? 'page' : undefined} style={navButtonStyle(section === 'home')}>
             בית
           </button>
-          <button onClick={() => navigate('/chat')} style={navButtonStyle(section === 'chat')}>
+          <button onClick={() => navigate('/chat')} aria-current={section === 'chat' ? 'page' : undefined} style={navButtonStyle(section === 'chat')}>
             העוזר הדיגיטלי
           </button>
-          <button onClick={() => navigate('/rights')} style={navButtonStyle(section === 'rights')}>
+          <button onClick={() => navigate('/rights')} aria-current={section === 'rights' ? 'page' : undefined} style={navButtonStyle(section === 'rights')}>
             הזכויות שלי
           </button>
         </nav>
@@ -202,10 +202,10 @@ function Footer(): JSX.Element {
           </p>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 48 }}>
-          <div>
-            <div style={{ fontSize: 17, fontWeight: 700, color: colors.white, marginBottom: 12 }}>
+          <nav aria-label="ניווט תחתון">
+            <h3 style={{ fontSize: 17, fontWeight: 700, color: colors.white, marginBottom: 12, marginTop: 0 }}>
               ניווט
-            </div>
+            </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <button onClick={() => navigate('/')} style={linkStyle}>
                 בית
@@ -217,11 +217,11 @@ function Footer(): JSX.Element {
                 הזכויות שלי
               </button>
             </div>
-          </div>
+          </nav>
           <div>
-            <div style={{ fontSize: 17, fontWeight: 700, color: colors.white, marginBottom: 12 }}>
+            <h3 style={{ fontSize: 17, fontWeight: 700, color: colors.white, marginBottom: 12, marginTop: 0 }}>
               צריך/ה עזרה?
-            </div>
+            </h3>
             <div
               style={{
                 display: 'flex',
@@ -247,7 +247,7 @@ function Footer(): JSX.Element {
             margin: '0 auto',
             padding: '18px 24px',
             fontSize: 14,
-            color: 'rgba(255,255,255,.6)',
+            color: 'rgba(255,255,255,.72)',
             lineHeight: 1.5,
           }}
         >
@@ -276,15 +276,15 @@ function BottomNav(): JSX.Element {
         boxShadow: '0 -2px 12px rgba(0,0,0,.18)',
       }}
     >
-      <button onClick={() => navigate('/')} style={bottomNavStyle(section === 'home')}>
+      <button onClick={() => navigate('/')} aria-current={section === 'home' ? 'page' : undefined} style={bottomNavStyle(section === 'home')}>
         <HomeIcon size={24} />
         בית
       </button>
-      <button onClick={() => navigate('/chat')} style={bottomNavStyle(section === 'chat')}>
+      <button onClick={() => navigate('/chat')} aria-current={section === 'chat' ? 'page' : undefined} style={bottomNavStyle(section === 'chat')}>
         <ChatIcon size={24} />
         עוזר
       </button>
-      <button onClick={() => navigate('/rights')} style={bottomNavStyle(section === 'rights')}>
+      <button onClick={() => navigate('/rights')} aria-current={section === 'rights' ? 'page' : undefined} style={bottomNavStyle(section === 'rights')}>
         <FileIcon size={24} />
         זכויות
       </button>
@@ -322,8 +322,9 @@ export function Layout(): JSX.Element {
         background: colors.pageBg,
       }}
     >
+      <a href="#main-content" className="skip-link">דלג לתוכן הראשי</a>
       <Header />
-      <main style={{ flex: '1 0 auto' }}>
+      <main id="main-content" style={{ flex: '1 0 auto' }}>
         <Outlet />
       </main>
       {showFooter ? <Footer /> : null}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, type JSX } from 'react';
+import { useState, useEffect, useCallback, useRef, type JSX } from 'react';
 import { supabase } from '../api/supabase';
 import { colors } from '../theme';
 import { CloseIcon } from './icons';
@@ -16,13 +16,60 @@ export function ForgotPasswordModal({ open, onClose }: ForgotPasswordModalProps)
   const [error, setError] = useState('');
   const [step, setStep] = useState<ModalStep>('form');
 
-  // Reset state when modal opens
+  const modalRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
+
+  // Reset state and manage focus when modal opens/closes
   useEffect(() => {
     if (open) {
+      triggerRef.current = document.activeElement as HTMLElement;
       setEmail('');
       setError('');
       setStep('form');
+
+      // Focus first element in modal when opened
+      setTimeout(() => {
+        if (modalRef.current) {
+          const focusable = modalRef.current.querySelector<HTMLElement>('button, input, [tabindex]:not([tabindex="-1"])');
+          if (focusable) focusable.focus();
+        }
+      }, 10);
+    } else {
+      if (triggerRef.current) {
+        triggerRef.current.focus();
+      }
     }
+  }, [open]);
+
+  // Trap focus within the modal using Tab / Shift+Tab
+  useEffect(() => {
+    if (!open) return;
+    const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab' || !modalRef.current) return;
+
+      const focusableElements = Array.from(modalRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      ));
+      if (focusableElements.length === 0) return;
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          lastElement?.focus();
+          e.preventDefault();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          firstElement?.focus();
+          e.preventDefault();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleTab);
+    return () => window.removeEventListener('keydown', handleTab);
   }, [open]);
 
   // Close on Escape key
@@ -75,7 +122,7 @@ export function ForgotPasswordModal({ open, onClose }: ForgotPasswordModalProps)
       aria-modal="true"
       aria-label="איפוס סיסמה"
     >
-      <div className="modal-card">
+      <div className="modal-card" ref={modalRef}>
         {/* Close button */}
         <button
           onClick={onClose}

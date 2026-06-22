@@ -139,7 +139,6 @@ function StepBody({ step }: { step: StepDef }): JSX.Element {
           dir="ltr"
           value={singleValue(answers, step.id)}
           onChange={(e) => wizard.setNumber(step.id, e.target.value)}
-          placeholder="לדוגמה: 50"
           style={{
             width: '100%',
             height: 56,

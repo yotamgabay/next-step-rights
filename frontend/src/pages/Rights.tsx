@@ -25,10 +25,11 @@ export function Rights(): JSX.Element {
         כל הזכויות מסודרות לפי נושא ולפי סוג הקטיעה. בחר/י כרטיס כדי לקרוא בפירוט.
       </p>
 
-      <h2 style={{ fontSize: 22, color: colors.headerBlue, fontWeight: 700, margin: '0 0 18px' }}>
+      <h2 id="rights-quick" style={{ fontSize: 22, color: colors.headerBlue, fontWeight: 700, margin: '0 0 18px' }}>
         נושאים מרכזיים
       </h2>
       <div
+        aria-labelledby="rights-quick"
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))',
@@ -49,10 +50,11 @@ export function Rights(): JSX.Element {
         })}
       </div>
 
-      <h2 style={{ fontSize: 22, color: colors.headerBlue, fontWeight: 700, margin: '0 0 18px' }}>
+      <h2 id="rights-causes" style={{ fontSize: 22, color: colors.headerBlue, fontWeight: 700, margin: '0 0 18px' }}>
         לפי סוג הקטיעה
       </h2>
       <div
+        aria-labelledby="rights-causes"
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))',

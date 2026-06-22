@@ -169,7 +169,7 @@ export function Home(): JSX.Element {
       {showResume ? <ResumeStrip onResume={wizard.resume} /> : null}
       {showProfile ? <ProfileStrip authName={authName} onEdit={wizard.resume} /> : null}
 
-      <section style={{ background: colors.blueTint }}>
+      <section aria-labelledby="home-hero" style={{ background: colors.blueTint }}>
         <div style={{ maxWidth: 880, margin: '0 auto', padding: '72px 24px 64px', textAlign: 'center' }}>
           <div
             style={{
@@ -186,6 +186,7 @@ export function Home(): JSX.Element {
             הבית של קטועי הגפיים בישראל
           </div>
           <h1
+            id="home-hero"
             style={{
               fontSize: 'clamp(28px,4.4vw,42px)',
               lineHeight: 1.18,
@@ -268,8 +269,9 @@ export function Home(): JSX.Element {
         </div>
       </section>
 
-      <section style={{ maxWidth, margin: '0 auto', padding: '56px 24px 24px' }}>
+      <section aria-labelledby="home-features" style={{ maxWidth, margin: '0 auto', padding: '56px 24px 24px' }}>
         <h2
+          id="home-features"
           style={{
             fontSize: 'clamp(22px,2.6vw,28px)',
             color: colors.darkBlue,
@@ -312,9 +314,10 @@ export function Home(): JSX.Element {
         </div>
       </section>
 
-      <section style={{ background: colors.sectionBg, marginTop: 32 }}>
+      <section aria-labelledby="home-causes" style={{ background: colors.sectionBg, marginTop: 32 }}>
         <div style={{ maxWidth, margin: '0 auto', padding: '56px 24px' }}>
           <h2
+            id="home-causes"
             style={{
               fontSize: 'clamp(22px,2.6vw,28px)',
               color: colors.darkBlue,
@@ -351,9 +354,10 @@ export function Home(): JSX.Element {
         </div>
       </section>
 
-      <section style={{ background: colors.headerBlue }}>
+      <section aria-labelledby="home-cta" style={{ background: colors.headerBlue }}>
         <div style={{ maxWidth: 760, margin: '0 auto', padding: '60px 24px', textAlign: 'center' }}>
           <h2
+            id="home-cta"
             style={{
               fontSize: 'clamp(22px,2.8vw,30px)',
               color: colors.white,

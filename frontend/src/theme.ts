@@ -21,7 +21,7 @@ export const colors = {
 
   text: '#333333',
   textMuted: '#555555',
-  textFaint: '#7A7A7A',
+  textFaint: '#6B6B6B',
   placeholder: '#AAAAAA',
 
   border: '#DDDDDD',

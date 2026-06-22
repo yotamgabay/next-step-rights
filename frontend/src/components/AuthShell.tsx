@@ -50,7 +50,9 @@ export function AuthShell({ maxWidth, children }: AuthShellProps): JSX.Element {
       >
         <Logo height={52} />
       </button>
-      {children}
+      <main style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        {children}
+      </main>
     </div>
   );
 }

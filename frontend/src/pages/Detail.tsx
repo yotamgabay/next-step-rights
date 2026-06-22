@@ -29,6 +29,7 @@ export function Detail(): JSX.Element {
     <div style={{ maxWidth: 820, margin: '0 auto', padding: '32px 24px 56px' }}>
       <button
         onClick={() => navigate(cameFromHome ? '/' : '/rights')}
+        aria-label={cameFromHome ? 'חזרה לדף הבית' : 'חזרה לכל הזכויות'}
         style={{
           background: 'none',
           border: 'none',

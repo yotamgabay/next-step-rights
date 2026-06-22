@@ -18,7 +18,7 @@ const navStateSchema = z
 function Bubble({ message }: { message: ChatMessage }): JSX.Element {
   const bot = message.role === 'bot';
   return (
-    <div style={{ display: 'flex', justifyContent: bot ? 'flex-start' : 'flex-end' }}>
+    <div style={{ display: 'flex', justifyContent: bot ? 'flex-start' : 'flex-end' }} aria-label={bot ? 'תשובת העוזר' : 'השאלה שלך'}>
       <div
         style={{
           maxWidth: '80%',
@@ -44,7 +44,7 @@ function TypingDots(): JSX.Element {
     background: colors.primaryBlue,
   };
   return (
-    <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+    <div style={{ display: 'flex', justifyContent: 'flex-start' }} role="status" aria-label="העוזר מקליד...">
       <div
         style={{
           background: colors.sectionBg,
