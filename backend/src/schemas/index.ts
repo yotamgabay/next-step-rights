@@ -13,13 +13,16 @@ const age = z.coerce.number().int().min(1, 'יש להזין גיל תקין').ma
 export const amputationTypeSchema = z.enum(amputationTypes);
 
 export const chatRequestSchema = z.object({
-  message: z.string().trim().min(1, 'יש להזין הודעה').max(1000),
+  message: z.string().trim().min(1, 'יש להזין הודעה').max(300, 'השאלה ארוכה מדי (עד 300 תווים).'),
+  /** Optional short English profile summary, prepended as context. */
+  profile: z.string().max(200).optional(),
 });
 export type ChatRequest = z.infer<typeof chatRequestSchema>;
 
 export const chatResponseSchema = z.object({
   reply: z.string(),
-  matched: z.boolean(),
+  docs: z.array(z.unknown()),
+  conversationId: z.string(),
 });
 export type ChatResponse = z.infer<typeof chatResponseSchema>;
 

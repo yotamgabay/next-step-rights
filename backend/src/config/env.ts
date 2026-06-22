@@ -16,6 +16,12 @@ const envSchema = z.object({
         .map((origin) => origin.trim())
         .filter((origin) => origin.length > 0),
     ),
+  /** Base origin of the upstream Kol Zchut chatbot. */
+  CHATBOT_BASE_URL: z.string().url().default('https://www.kolzchut.org.il'),
+  /** REST path for the chatbot question endpoint. */
+  CHATBOT_PATH: z.string().default('/w/he/rest.php/kzchatbot/v0/question'),
+  /** Upstream request timeout in milliseconds. */
+  CHATBOT_TIMEOUT_MS: z.coerce.number().int().positive().default(20000),
 });
 
 const parsed = envSchema.safeParse(process.env);

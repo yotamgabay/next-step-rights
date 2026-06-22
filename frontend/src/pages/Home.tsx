@@ -227,6 +227,7 @@ export function Home(): JSX.Element {
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
+              maxLength={150}
               aria-label="כתיבת שאלה לעוזר הדיגיטלי"
               placeholder="לדוגמה: איך מגישים בקשה לפרוטזה?"
               style={{
@@ -260,7 +261,7 @@ export function Home(): JSX.Element {
               }}
             >
               <SendIcon size={20} color={colors.white} />
-              שליחה
+              תן לי יד
             </button>
           </form>
           <p style={{ fontSize: 15, color: colors.textFaint, margin: '14px 0 0' }}>

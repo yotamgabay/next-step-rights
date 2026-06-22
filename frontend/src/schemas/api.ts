@@ -4,7 +4,8 @@ import { z } from 'zod';
 
 export const chatResponseSchema = z.object({
   reply: z.string(),
-  matched: z.boolean(),
+  docs: z.array(z.unknown()),
+  conversationId: z.string(),
 });
 export type ChatResponseDto = z.infer<typeof chatResponseSchema>;
 
