@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { authRouter } from './auth.js';
 import { chatRouter } from './chat.js';
 import { rightsRouter } from './rights.js';
 
@@ -10,5 +9,4 @@ apiRouter.get('/health', (_req, res) => {
 });
 
 apiRouter.use('/chat', chatRouter);
-apiRouter.use('/auth', authRouter);
 apiRouter.use('/rights', rightsRouter);

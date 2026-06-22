@@ -66,16 +66,12 @@ export const authCardStyle: React.CSSProperties = {
 
 interface OAuthButtonsProps {
   googleLabel: string;
-  appleLabel: string;
   onGoogle: () => void;
-  onApple: () => void;
 }
 
 export function OAuthButtons({
   googleLabel,
-  appleLabel,
   onGoogle,
-  onApple,
 }: OAuthButtonsProps): JSX.Element {
   const base: React.CSSProperties = {
     width: '100%',
@@ -94,13 +90,9 @@ export function OAuthButtons({
   };
   return (
     <>
-      <button onClick={onGoogle} style={{ ...base, marginBottom: 12 }}>
+      <button onClick={onGoogle} style={base}>
         <GoogleIcon size={22} />
         {googleLabel}
-      </button>
-      <button onClick={onApple} style={base}>
-        <AppleIcon size={20} />
-        {appleLabel}
       </button>
     </>
   );

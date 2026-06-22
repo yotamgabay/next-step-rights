@@ -1,6 +1,6 @@
 import { useState, type JSX } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../api/client';
+import { supabase } from '../api/supabase';
 import { AuthShell, authCardStyle, Divider, OAuthButtons } from '../components/AuthShell';
 import { PasswordField, PrimaryButton, TextField } from '../components/Field';
 import { collectErrors, loginSchema, type LoginValues } from '../schemas/forms';
@@ -29,9 +29,14 @@ export function Login(): JSX.Element {
       return;
     }
     setBusy(true);
-    api
-      .login(values)
-      .then(() => navigate('/'))
+    supabase.auth.signInWithPassword({
+      email: values.email,
+      password: values.password,
+    })
+      .then(({ error }) => {
+        if (error) throw error;
+        navigate('/');
+      })
       .catch(() => setErrors({ password: 'ההתחברות נכשלה, נסה/י שוב' }))
       .finally(() => setBusy(false));
   };
@@ -79,9 +84,7 @@ export function Login(): JSX.Element {
 
         <OAuthButtons
           googleLabel="המשך עם Google"
-          appleLabel="המשך עם Apple"
-          onGoogle={() => navigate('/')}
-          onApple={() => navigate('/')}
+          onGoogle={() => supabase.auth.signInWithOAuth({ provider: 'google' })}
         />
 
         <p style={{ textAlign: 'center', fontSize: 16, color: colors.textMuted, margin: '26px 0 0' }}>

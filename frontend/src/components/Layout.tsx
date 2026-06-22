@@ -3,6 +3,8 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { colors, maxWidth } from '../theme';
 import { ChatIcon, FileIcon, HomeIcon, UserIcon } from './icons';
 import { Logo } from './Logo';
+import { useAuth } from '../hooks/useAuth';
+import { supabase } from '../api/supabase';
 
 type Section = 'home' | 'chat' | 'rights' | 'other';
 
@@ -48,6 +50,7 @@ function bottomNavStyle(active: boolean): React.CSSProperties {
 
 function Header(): JSX.Element {
   const navigate = useNavigate();
+  const { session } = useAuth();
   const section = sectionFor(useLocation().pathname);
   return (
     <header style={{ background: colors.headerBlue, position: 'relative', flex: 'none' }}>
@@ -85,38 +88,59 @@ function Header(): JSX.Element {
           className="app-header-auth"
           style={{ marginInlineStart: 'auto', display: 'flex', gap: 10, flexWrap: 'wrap' }}
         >
-          <button
-            onClick={() => navigate('/login')}
-            style={{
-              height: 44,
-              padding: '0 22px',
-              borderRadius: 22,
-              border: '1.5px solid rgba(255,255,255,.6)',
-              background: 'transparent',
-              color: colors.white,
-              fontSize: 16,
-              fontWeight: 600,
-              cursor: 'pointer',
-            }}
-          >
-            התחברות
-          </button>
-          <button
-            onClick={() => navigate('/signup')}
-            style={{
-              height: 44,
-              padding: '0 22px',
-              borderRadius: 22,
-              border: 'none',
-              background: colors.orange,
-              color: colors.white,
-              fontSize: 16,
-              fontWeight: 700,
-              cursor: 'pointer',
-            }}
-          >
-            הרשמה
-          </button>
+          {session ? (
+            <button
+              onClick={() => supabase.auth.signOut()}
+              style={{
+                height: 44,
+                padding: '0 22px',
+                borderRadius: 22,
+                border: '1.5px solid rgba(255,255,255,.6)',
+                background: 'transparent',
+                color: colors.white,
+                fontSize: 16,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              התנתקות
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={() => navigate('/login')}
+                style={{
+                  height: 44,
+                  padding: '0 22px',
+                  borderRadius: 22,
+                  border: '1.5px solid rgba(255,255,255,.6)',
+                  background: 'transparent',
+                  color: colors.white,
+                  fontSize: 16,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                התחברות
+              </button>
+              <button
+                onClick={() => navigate('/signup')}
+                style={{
+                  height: 44,
+                  padding: '0 22px',
+                  borderRadius: 22,
+                  border: 'none',
+                  background: colors.orange,
+                  color: colors.white,
+                  fontSize: 16,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                הרשמה
+              </button>
+            </>
+          )}
         </div>
       </div>
       <div style={{ height: 3, background: colors.orange }} />
@@ -218,6 +242,7 @@ function Footer(): JSX.Element {
 
 function BottomNav(): JSX.Element {
   const navigate = useNavigate();
+  const { session } = useAuth();
   const section = sectionFor(useLocation().pathname);
   return (
     <nav
@@ -245,10 +270,17 @@ function BottomNav(): JSX.Element {
         <FileIcon size={24} />
         זכויות
       </button>
-      <button onClick={() => navigate('/login')} style={bottomNavStyle(false)}>
-        <UserIcon size={24} />
-        כניסה
-      </button>
+      {session ? (
+        <button onClick={() => supabase.auth.signOut()} style={bottomNavStyle(false)}>
+          <UserIcon size={24} />
+          יציאה
+        </button>
+      ) : (
+        <button onClick={() => navigate('/login')} style={bottomNavStyle(false)}>
+          <UserIcon size={24} />
+          כניסה
+        </button>
+      )}
     </nav>
   );
 }
