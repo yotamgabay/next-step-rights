@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { ChatDisclaimer } from '../components/ChatDisclaimer';
 import { ChatIcon, PhoneIcon, SendIcon } from '../components/icons';
 import { quickQuestions } from '../data/answers';
-import { causeIds, topics } from '../data/topics';
+
 import { useChat } from '../hooks/useChat';
 import { colors } from '../theme';
 import type { ChatMessage } from '../types';
@@ -206,36 +206,6 @@ export function Chat(): JSX.Element {
             ))}
           </div>
         </div>
-
-        {expanded ? (
-          <div style={{ marginTop: 18 }}>
-            <div style={{ fontSize: 16, fontWeight: 700, color: colors.textMuted, marginBottom: 10 }}>
-              או לפי סוג הקטיעה:
-            </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-              {causeIds.map((id) => (
-                <button
-                  key={id}
-                  onClick={() => sendCategory(id)}
-                  style={{
-                    background: colors.orangeTint,
-                    border: `1.5px solid ${colors.orangeTintBorder}`,
-                    color: colors.orangeDeep,
-                    fontSize: 16,
-                    fontWeight: 600,
-                    padding: '11px 18px',
-                    borderRadius: 22,
-                    cursor: 'pointer',
-                    textAlign: 'right',
-                  }}
-                >
-                  {topics[id].title}
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : null}
-
         <form
           onSubmit={submit}
           className="chat-input"

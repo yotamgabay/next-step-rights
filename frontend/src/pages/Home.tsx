@@ -2,6 +2,7 @@ import { useState, type JSX } from 'react';
 import { EligibleRights } from '../components/EligibleRights';
 import { useNavigate } from 'react-router-dom';
 import { CardButton, DetailsArrow, Tag } from '../components/Card';
+import { CategoryRightsModal } from '../components/CategoryRightsModal';
 import { ChatDisclaimer } from '../components/ChatDisclaimer';
 import {
   CardIcon,
@@ -11,15 +12,15 @@ import {
   MobilityIcon,
   SendIcon,
 } from '../components/icons';
-import { causeIds, topics } from '../data/topics';
+
 import { useAuth } from '../hooks/useAuth';
 import { colors, maxWidth } from '../theme';
-import type { TopicId } from '../types';
+
 import { authorityName } from '../wizard/wizardData';
 import { useWizard } from '../wizard/WizardContext';
 
 interface FeatureCard {
-  id: TopicId;
+  id: string;
   title: string;
   desc: string;
   icon: JSX.Element;
@@ -149,6 +150,7 @@ export function Home(): JSX.Element {
   const wizard = useWizard();
   const { session, profile } = useAuth();
   const [query, setQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const submit = (e: React.FormEvent): void => {
     e.preventDefault();
@@ -157,7 +159,6 @@ export function Home(): JSX.Element {
     navigate('/chat', q ? { state: { query: q } } : undefined);
   };
 
-  const openTopic = (id: TopicId): void => navigate(`/rights/${id}`, { state: { from: 'home' } });
 
   // Onboarding completion is driven by the persisted profile, not the ephemeral
   // wizard state (which resets on reload).
@@ -296,7 +297,7 @@ export function Home(): JSX.Element {
           }}
         >
           {featureCards.map((card) => (
-            <CardButton key={card.id} onClick={() => openTopic(card.id)}>
+            <CardButton key={card.id} onClick={() => setSelectedCategory(card.title)}>
               <span
                 style={{
                   width: 56,
@@ -318,45 +319,6 @@ export function Home(): JSX.Element {
         </div>
       </section>
 
-      <section aria-labelledby="home-causes" style={{ background: colors.sectionBg, marginTop: 32 }}>
-        <div style={{ maxWidth, margin: '0 auto', padding: '56px 24px' }}>
-          <h2
-            id="home-causes"
-            style={{
-              fontSize: 'clamp(22px,2.6vw,28px)',
-              color: colors.darkBlue,
-              fontWeight: 700,
-              margin: '0 0 6px',
-            }}
-          >
-            הזכויות לפי סוג הקטיעה
-          </h2>
-          <p style={{ fontSize: 18, color: colors.textMuted, margin: '0 0 28px', maxWidth: 680, lineHeight: 1.5 }}>
-            הגורם המטפל והזכויות משתנים לפי הנסיבות שבהן אירעה הקטיעה. בחר/י את המצב שמתאים לך:
-          </p>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))',
-              gap: 20,
-            }}
-          >
-            {causeIds.map((id) => {
-              const topic = topics[id];
-              return (
-                <CardButton key={id} onClick={() => openTopic(id)}>
-                  <Tag>{topic.tag}</Tag>
-                  <span style={{ fontSize: 20, fontWeight: 700, color: colors.darkBlue, lineHeight: 1.3 }}>
-                    {topic.title}
-                  </span>
-                  <span style={{ fontSize: 16, color: colors.textMuted }}>גורם מטפל: {topic.body}</span>
-                  <DetailsArrow />
-                </CardButton>
-              );
-            })}
-          </div>
-        </div>
-      </section>
 
       <section aria-labelledby="home-cta" style={{ background: colors.headerBlue }}>
         <div style={{ maxWidth: 760, margin: '0 auto', padding: '60px 24px', textAlign: 'center' }}>
@@ -392,6 +354,7 @@ export function Home(): JSX.Element {
           </button>
         </div>
       </section>
+      {selectedCategory && <CategoryRightsModal category={selectedCategory} onClose={() => setSelectedCategory(null)} />}
     </div>
   );
 }
