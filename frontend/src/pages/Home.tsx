@@ -1,4 +1,5 @@
 import { useState, type JSX } from 'react';
+import { EligibleRights } from '../components/EligibleRights';
 import { useNavigate } from 'react-router-dom';
 import { CardButton, DetailsArrow, Tag } from '../components/Card';
 import {
@@ -267,6 +268,8 @@ export function Home(): JSX.Element {
           </p>
         </div>
       </section>
+
+      <EligibleRights />
 
       <section style={{ maxWidth, margin: '0 auto', padding: '56px 24px 24px' }}>
         <h2
