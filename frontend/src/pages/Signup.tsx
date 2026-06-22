@@ -92,54 +92,53 @@ export function Signup(): JSX.Element {
   return (
     <AuthShell maxWidth={520}>
       <div style={{ ...authCardStyle, maxWidth: 520 }}>
-          <h1 style={{ fontSize: 28, color: colors.darkBlue, fontWeight: 800, margin: '0 0 6px', textAlign: 'center' }}>
-            יצירת חשבון חדש
-          </h1>
-          <p style={{ fontSize: 17, color: colors.textMuted, margin: '0 0 24px', textAlign: 'center' }}>
-            כמה פרטים כדי שנוכל להתאים לך את הזכויות הנכונות.
-          </p>
+        <h1 style={{ fontSize: 28, color: colors.darkBlue, fontWeight: 800, margin: '0 0 6px', textAlign: 'center' }}>
+          יצירת חשבון חדש
+        </h1>
+        <p style={{ fontSize: 17, color: colors.textMuted, margin: '0 0 24px', textAlign: 'center' }}>
+          כמה פרטים כדי שנוכל להתאים לך את הזכויות הנכונות.
+        </p>
 
-          <OAuthButtons
-            googleLabel="הרשמה מהירה עם Google"
-            onGoogle={() => supabase.auth.signInWithOAuth({ provider: 'google' })}
+        <OAuthButtons
+          googleLabel="הרשמה מהירה עם Google"
+          onGoogle={() => supabase.auth.signInWithOAuth({ provider: 'google' })}
+        />
+
+        <Divider label="או הרשמה עם אימייל" />
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+          <TextField label="שם מלא" value={form.name} onChange={set('name')} error={errors.name} />
+          <TextField
+            label="אימייל"
+            type="email"
+            ltr
+            value={form.email}
+            onChange={set('email')}
+            error={errors.email}
           />
-
-          <Divider label="או הרשמה עם אימייל" />
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-            <TextField label="שם מלא" value={form.name} onChange={set('name')} placeholder="ישראל ישראלי" error={errors.name} />
-            <TextField
-              label="אימייל"
-              type="email"
-              ltr
-              value={form.email}
-              onChange={set('email')}
-              placeholder="name@email.com"
-              error={errors.email}
-            />
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 18 }}>
-              <TextField label="טלפון" type="tel" ltr value={form.phone} onChange={set('phone')} placeholder="050-0000000" error={errors.phone} />
-              <TextField label="גיל" type="number" ltr value={form.age} onChange={set('age')} placeholder="35" error={errors.age} />
-            </div>
-            <SelectField
-              label="סוג הקטיעה"
-              value={form.amputationType}
-              onChange={set('amputationType')}
-              options={amputationTypes}
-              error={errors.amputationType}
-            />
-            <PasswordField
-              label="סיסמה"
-              value={form.password}
-              onChange={set('password')}
-              placeholder="בחר/י סיסמה (לפחות 6 תווים)"
-              error={errors.password}
-            />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 18 }}>
+            <TextField label="טלפון" type="tel" ltr value={form.phone} onChange={set('phone')} error={errors.phone} />
+            <TextField label="גיל" type="number" ltr value={form.age} onChange={set('age')} error={errors.age} />
           </div>
+          <SelectField
+            label="סוג הקטיעה"
+            value={form.amputationType}
+            onChange={set('amputationType')}
+            options={amputationTypes}
+            error={errors.amputationType}
+          />
+          <PasswordField
+            label="סיסמה"
+            value={form.password}
+            onChange={set('password')}
+            placeholder="בחר/י סיסמה (לפחות 6 תווים)"
+            error={errors.password}
+          />
+        </div>
 
-          <PrimaryButton onClick={submitForm} busy={busy} style={{ marginTop: 24 }}>
-            {busy ? 'יוצר חשבון…' : 'יצירת חשבון'}
-          </PrimaryButton>
+        <PrimaryButton onClick={submitForm} busy={busy} style={{ marginTop: 24 }}>
+          {busy ? 'יוצר חשבון…' : 'יצירת חשבון'}
+        </PrimaryButton>
         <p style={{ textAlign: 'center', fontSize: 16, color: colors.textMuted, margin: '22px 0 0' }}>
           כבר יש לך חשבון?{' '}
           <button

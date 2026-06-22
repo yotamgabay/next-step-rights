@@ -12,7 +12,7 @@ import { useAuth } from '../hooks/useAuth';
 export function CompleteProfile(): JSX.Element {
   const navigate = useNavigate();
   const { user, profile } = useAuth();
-  
+
   const [form, setForm] = useState({ phone: '', age: '', amputationType: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
@@ -45,7 +45,7 @@ export function CompleteProfile(): JSX.Element {
       return;
     }
     setBusy(true);
-    
+
     const { error } = await supabase.from('profiles').update({
       phone: form.phone,
       age: parseInt(form.age, 10),
@@ -87,8 +87,8 @@ export function CompleteProfile(): JSX.Element {
           <ReadonlyField label="אימייל" value={user?.email || ''} ltr />
           <div style={{ height: 1, background: '#EEE', margin: '2px 0' }} />
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 18 }}>
-            <TextField label="טלפון *" type="tel" ltr value={form.phone} onChange={set('phone')} placeholder="050-0000000" error={errors.phone} />
-            <TextField label="גיל *" type="number" ltr value={form.age} onChange={set('age')} placeholder="35" error={errors.age} />
+            <TextField label="טלפון *" type="tel" ltr value={form.phone} onChange={set('phone')} error={errors.phone} />
+            <TextField label="גיל *" type="number" ltr value={form.age} onChange={set('age')} error={errors.age} />
           </div>
           <SelectField
             label="סוג הקטיעה *"

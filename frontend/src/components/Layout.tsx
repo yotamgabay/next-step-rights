@@ -210,12 +210,9 @@ function Footer(): JSX.Element {
                 color: 'rgba(255,255,255,.82)',
               }}
             >
-              <a
-                href="tel:1700554700"
-                style={{ color: colors.white, fontWeight: 700, textDecoration: 'none' }}
-              >
-                טלפון: 1-700-554-700
-              </a>
+
+              טלפון: 1-700-554-700
+
               <span>ימים א׳–ה׳ · 9:00–16:00</span>
               <span>מענה אנושי מצוות הצעד הבא</span>
             </div>
