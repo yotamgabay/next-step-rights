@@ -21,11 +21,11 @@ function PersonalizedCard({ onClick, children }: { onClick: () => void; children
         borderLeft: `1px solid ${hover ? colors.orange : '#E5EFFF'}`,
         borderRight: `4px solid ${colors.orange}`,
         borderRadius: 12,
-        padding: 24,
+        padding: 16,
         cursor: 'pointer',
         display: 'flex',
         flexDirection: 'column',
-        gap: 12,
+        gap: 8,
         transition: 'box-shadow .15s, transform .15s, border-color .15s',
         boxShadow: hover ? '0 10px 26px rgba(13,61,94,.12)' : '0 2px 8px rgba(13,61,94,.04)',
         transform: hover ? 'translateY(-3px)' : 'none',
@@ -106,16 +106,24 @@ export function EligibleRights(): JSX.Element | null {
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))',
-            gap: 20,
+            gap: 12,
           }}
         >
           {rights.map((r) => (
             <PersonalizedCard key={r.right_id} onClick={() => { }}>
               <Tag>{r.provider_authority}</Tag>
-              <span style={{ fontSize: 20, fontWeight: 700, color: colors.darkBlue, lineHeight: 1.3 }}>
+              <span style={{ fontSize: 18, fontWeight: 700, color: colors.darkBlue, lineHeight: 1.3 }}>
                 {r.title}
               </span>
-              <span style={{ fontSize: 16, color: colors.textMuted }}>{r.description}</span>
+              <span style={{ 
+                fontSize: 14.5, 
+                color: colors.textMuted, 
+                lineHeight: 1.4,
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden'
+              }}>{r.description}</span>
               <DetailsArrow />
             </PersonalizedCard>
           ))}
