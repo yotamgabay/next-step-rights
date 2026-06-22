@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../api/supabase';
 import { AuthShell, authCardStyle, Divider, OAuthButtons } from '../components/AuthShell';
 import { PasswordField, PrimaryButton, TextField } from '../components/Field';
+import { ForgotPasswordModal } from '../components/ForgotPasswordModal';
 import { collectErrors, loginSchema, type LoginValues } from '../schemas/forms';
 import { colors } from '../theme';
 
@@ -11,6 +12,7 @@ export function Login(): JSX.Element {
   const [values, setValues] = useState<LoginValues>({ email: '', password: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
+  const [showForgot, setShowForgot] = useState(false);
 
   const set = (key: keyof LoginValues) => (value: string) => {
     setValues((v) => ({ ...v, [key]: value }));
@@ -71,7 +73,19 @@ export function Login(): JSX.Element {
         </div>
 
         <div style={{ textAlign: 'left', margin: '14px 0 22px' }}>
-          <button onClick={(e) => { e.preventDefault(); navigate('/forgot-password'); }} style={{ fontSize: 15, color: colors.headerBlue, fontWeight: 600, textDecoration: 'none' }}>
+          <button
+            type="button"
+            onClick={() => setShowForgot(true)}
+            style={{
+              background: 'none',
+              border: 'none',
+              fontSize: 15,
+              color: colors.headerBlue,
+              fontWeight: 600,
+              cursor: 'pointer',
+              padding: 0,
+            }}
+          >
             שכחת סיסמה?
           </button>
         </div>
@@ -105,6 +119,8 @@ export function Login(): JSX.Element {
           </button>
         </p>
       </div>
+
+      <ForgotPasswordModal open={showForgot} onClose={() => setShowForgot(false)} />
     </AuthShell>
   );
 }

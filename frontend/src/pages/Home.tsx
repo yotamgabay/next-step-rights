@@ -10,9 +10,10 @@ import {
   SendIcon,
 } from '../components/icons';
 import { causeIds, topics } from '../data/topics';
+import { useAuth } from '../hooks/useAuth';
 import { colors, maxWidth } from '../theme';
 import type { TopicId } from '../types';
-import { authorityFor } from '../wizard/wizardData';
+import { authorityName } from '../wizard/wizardData';
 import { useWizard } from '../wizard/WizardContext';
 
 interface FeatureCard {
@@ -144,6 +145,7 @@ function ProfileStrip({ authName, onEdit }: { authName: string; onEdit: () => vo
 export function Home(): JSX.Element {
   const navigate = useNavigate();
   const wizard = useWizard();
+  const { session, profile } = useAuth();
   const [query, setQuery] = useState('');
 
   const submit = (e: React.FormEvent): void => {
@@ -155,9 +157,12 @@ export function Home(): JSX.Element {
 
   const openTopic = (id: TopicId): void => navigate(`/rights/${id}`, { state: { from: 'home' } });
 
-  const showResume = wizard.skipped && !wizard.completed;
-  const showProfile = wizard.completed;
-  const authName = authorityFor(wizard.answers.cause).name;
+  // Onboarding completion is driven by the persisted profile, not the ephemeral
+  // wizard state (which resets on reload).
+  const completed = !!profile?.amputation_type;
+  const showResume = !!session && !completed && wizard.skipped;
+  const showProfile = completed;
+  const authName = authorityName(profile?.cause);
 
   return (
     <div>

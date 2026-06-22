@@ -2,37 +2,21 @@ import { useState, type JSX } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../api/supabase';
 import { AuthShell, authCardStyle, Divider, OAuthButtons } from '../components/AuthShell';
-import {
-  PasswordField,
-  PrimaryButton,
-  ReadonlyField,
-  SelectField,
-  TextField,
-} from '../components/Field';
-import { CheckCircleIcon } from '../components/icons';
-import { amputationTypes } from '../data/topics';
+import { PasswordField, PrimaryButton, TextField } from '../components/Field';
 import { signupSchema } from '../schemas/forms';
 import { colors } from '../theme';
 
 interface SignupForm {
   name: string;
   email: string;
-  phone: string;
-  age: string;
-  amputationType: string;
   password: string;
 }
 
 const emptyForm: SignupForm = {
   name: '',
   email: '',
-  phone: '',
-  age: '',
-  amputationType: '',
   password: '',
 };
-
-const GOOGLE_PROFILE = { name: 'ישראל ישראלי', email: 'israel@gmail.com' } as const;
 
 function issuesToErrors(issues: readonly { path: PropertyKey[]; message: string }[]): Record<string, string> {
   const errors: Record<string, string> = {};
@@ -59,11 +43,6 @@ export function Signup(): JSX.Element {
     });
   };
 
-  const finishSignup = (): void => {
-    navigate('/');
-    wizard.start();
-  };
-
   const submitForm = (): void => {
     const result = signupSchema.safeParse(form);
     if (!result.success) {
@@ -71,21 +50,33 @@ export function Signup(): JSX.Element {
       return;
     }
     setBusy(true);
-    supabase.auth.signUp({
-      email: form.email,
-      password: form.password,
-      options: {
-        data: {
-          full_name: form.name,
-        }
-      }
-    })
+    supabase.auth
+      .signUp({
+        email: form.email,
+        password: form.password,
+        options: {
+          data: {
+            full_name: form.name,
+          },
+        },
+      })
       .then(({ error }) => {
         if (error) throw error;
-        // The GlobalAuthGuard in App.tsx will automatically redirect 
-        // the user to /complete-profile once they are logged in.
+        // The GlobalAuthGuard in App.tsx redirects to /complete-profile once
+        // the user is logged in, where the remaining onboarding details (incl.
+        // amputation type) are collected.
       })
-      .catch(() => setErrors({ email: 'ההרשמה נכשלה, נסה/י שוב' }))
+      .catch((err: unknown) => {
+        const status = (err as { status?: number })?.status;
+        const msg = (err as { message?: string })?.message ?? '';
+        if (status === 429 || msg.includes('rate limit')) {
+          setErrors({ email: 'יותר מדי ניסיונות. נסה/י שוב עוד מספר דקות.' });
+        } else if (msg.includes('already registered') || msg.includes('User already registered')) {
+          setErrors({ email: 'כתובת האימייל כבר רשומה. נסה/י להתחבר.' });
+        } else {
+          setErrors({ email: 'ההרשמה נכשלה, נסה/י שוב' });
+        }
+      })
       .finally(() => setBusy(false));
   };
 
@@ -115,17 +106,6 @@ export function Signup(): JSX.Element {
             value={form.email}
             onChange={set('email')}
             error={errors.email}
-          />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 18 }}>
-            <TextField label="טלפון" type="tel" ltr value={form.phone} onChange={set('phone')} error={errors.phone} />
-            <TextField label="גיל" type="number" ltr value={form.age} onChange={set('age')} error={errors.age} />
-          </div>
-          <SelectField
-            label="סוג הקטיעה"
-            value={form.amputationType}
-            onChange={set('amputationType')}
-            options={amputationTypes}
-            error={errors.amputationType}
           />
           <PasswordField
             label="סיסמה"

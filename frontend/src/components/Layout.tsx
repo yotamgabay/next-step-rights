@@ -50,8 +50,10 @@ function bottomNavStyle(active: boolean): React.CSSProperties {
 
 function Header(): JSX.Element {
   const navigate = useNavigate();
-  const { session } = useAuth();
+  const { session, profile, user } = useAuth();
   const section = sectionFor(useLocation().pathname);
+  const displayName =
+    profile?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || '';
   return (
     <header style={{ background: colors.headerBlue, position: 'relative', flex: 'none' }}>
       <div
@@ -89,8 +91,26 @@ function Header(): JSX.Element {
           style={{ marginInlineStart: 'auto', display: 'flex', gap: 10, flexWrap: 'wrap' }}
         >
           {session ? (
-            <button
-              onClick={() => supabase.auth.signOut()}
+            <>
+              {displayName ? (
+                <span
+                  className="nav-greeting"
+                  style={{
+                    alignSelf: 'center',
+                    color: colors.white,
+                    fontSize: 16,
+                    fontWeight: 600,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    maxWidth: 180,
+                  }}
+                >
+                  שלום, {displayName}
+                </span>
+              ) : null}
+              <button
+                onClick={() => supabase.auth.signOut()}
               style={{
                 height: 44,
                 padding: '0 22px',
@@ -102,9 +122,10 @@ function Header(): JSX.Element {
                 fontWeight: 600,
                 cursor: 'pointer',
               }}
-            >
-              התנתקות
-            </button>
+              >
+                התנתקות
+              </button>
+            </>
           ) : (
             <>
               <button

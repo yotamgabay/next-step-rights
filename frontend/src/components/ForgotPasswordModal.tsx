@@ -230,7 +230,6 @@ export function ForgotPasswordModal({ open, onClose }: ForgotPasswordModalProps)
                   setEmail(v);
                   if (error) setError('');
                 }}
-                placeholder="name@email.com"
                 error={error || undefined}
               />
             </div>
