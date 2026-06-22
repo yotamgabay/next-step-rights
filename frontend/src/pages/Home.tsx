@@ -2,6 +2,7 @@ import { useState, type JSX } from 'react';
 import { EligibleRights } from '../components/EligibleRights';
 import { useNavigate } from 'react-router-dom';
 import { CardButton, DetailsArrow, Tag } from '../components/Card';
+import { ChatDisclaimer } from '../components/ChatDisclaimer';
 import {
   CardIcon,
   CheckCircleIcon,
@@ -267,6 +268,7 @@ export function Home(): JSX.Element {
           <p style={{ fontSize: 15, color: colors.textFaint, margin: '14px 0 0' }}>
             אפשר גם לבחור נושא מהרשימה למטה
           </p>
+          <ChatDisclaimer style={{ margin: '8px auto 0', maxWidth: 560 }} />
         </div>
       </section>
 

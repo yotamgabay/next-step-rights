@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type JSX } from 'react';
 import { useLocation } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { z } from 'zod';
+import { ChatDisclaimer } from '../components/ChatDisclaimer';
 import { ChatIcon, PhoneIcon, SendIcon } from '../components/icons';
 import { quickQuestions } from '../data/answers';
 import { causeIds, topics } from '../data/topics';
@@ -300,6 +301,8 @@ export function Chat(): JSX.Element {
             )}
           </button>
         </form>
+
+        <ChatDisclaimer />
 
         <div
           style={{
