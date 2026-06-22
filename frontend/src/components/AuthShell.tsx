@@ -1,7 +1,7 @@
 import type { JSX } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { colors } from '../theme';
-import { GoogleIcon, AppleIcon } from './icons';
+import { GoogleIcon } from './icons';
 import { Logo } from './Logo';
 
 interface AuthShellProps {

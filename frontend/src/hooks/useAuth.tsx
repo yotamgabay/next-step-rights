@@ -8,6 +8,8 @@ export interface UserProfile {
   age?: number | null;
   amputation_type?: string | null;
   cause?: string | null;
+  insurer?: string | null;
+  prosthetic?: string | null;
   phone?: string | null;
 }
 
@@ -16,9 +18,17 @@ interface AuthState {
   user: User | null;
   profile: UserProfile | null;
   loading: boolean;
+  /** Re-fetches the profile row (e.g. after onboarding writes new data). */
+  refreshProfile: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthState>({ session: null, user: null, profile: null, loading: true });
+const AuthContext = createContext<AuthState>({
+  session: null,
+  user: null,
+  profile: null,
+  loading: true,
+  refreshProfile: async () => {},
+});
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
@@ -26,12 +36,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchProfile(userId: string) {
-      const { data } = await supabase.from('profiles').select('*').eq('id', userId).single();
-      setProfile(data || null);
-    }
+  async function fetchProfile(userId: string): Promise<void> {
+    const { data } = await supabase.from('profiles').select('*').eq('id', userId).single();
+    setProfile(data ?? null);
+  }
 
+  async function refreshProfile(): Promise<void> {
+    const userId = user?.id;
+    if (userId) await fetchProfile(userId);
+  }
+
+  useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
@@ -43,7 +58,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
@@ -58,7 +75,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  return <AuthContext.Provider value={{ session, user, profile, loading }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ session, user, profile, loading, refreshProfile }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {

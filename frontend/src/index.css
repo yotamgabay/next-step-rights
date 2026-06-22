@@ -57,6 +57,13 @@ select {
   display: none;
 }
 
+/* Greeting shows only when the header has room, so it never wraps to a new row. */
+@media (max-width: 900px) {
+  .nav-greeting {
+    display: none !important;
+  }
+}
+
 @media (max-width: 760px) {
   .desktop-nav {
     display: none !important;

@@ -22,13 +22,13 @@ service.
 .
 ├── frontend/                 # Vite + React app
 │   └── src/
-│       ├── api/              # typed fetch client & supabase client
+│       ├── api/              # fetch client, supabase client, onboarding persistence
 │       ├── components/       # Layout, Field, Card, icons, Logo, AuthShell
 │       ├── data/             # rights catalogue + FAQ rendered by the UI
 │       ├── hooks/            # useChat, useAuth
-│       ├── pages/            # Home, Chat, Rights, Detail, Login, Signup, CompleteProfile
+│       ├── pages/            # Home, Chat, Rights, Detail, Login, Signup
 │       ├── schemas/          # zod schemas (forms + API DTOs)
-│       ├── wizard/           # personalization wizard (context + logic + UI)
+│       ├── wizard/           # personalization wizard — also the onboarding (context + logic + UI)
 │       ├── theme.ts          # design tokens
 │       └── types.ts          # domain types
 ├── backend/                  # Express API
@@ -77,5 +77,7 @@ npm run build               # production build for both
 - The assistant returns curated demo answers; the backend `data/rights.ts` is the place to swap in a real rights database / LLM retrieval.
 - Authentication and User Profiles are now handled by **Supabase**. The `supabase/migrations/` folder contains the SQL script to create the DB and the trigger required to automatically link authenticated users to the `profiles` table.
 - The rights catalogue is duplicated in `frontend/src/data` (for instant rendering) and `backend/src/data` (source of truth for the assistant). They can be unified into a shared package if the content starts changing often.
-- The personalization wizard implements the **stepper** variant only.
-- The logo is an inline SVG wordmark (`components/Logo.tsx`) so the build needs no binary asset.
+- The personalization wizard (stepper) **is the onboarding** and follows the onboarding flowchart end to end: cause, insurer, a multi-select amputation matrix (limb × side × level), disability % and edge-case flags (dominant hand / phantom pain / CRPS), prosthetic use, education, gender and children. A logged-in user without a completed profile is prompted with it once per session.
+- On finish it persists to Supabase (`api/onboarding.ts`): `profiles` (cause, insurer, prosthetic, `base_disability_percentage`, `is_dominant_hand_amputated`, `has_phantom_pain`, `has_crps`, education, gender, `amputation_type`), a `user_amputations` row per affected limb/side, and a `user_children` row per chosen age group. `amputation_type` doubles as the "onboarding completed" marker the auth gate checks. `weighted_disability_percentage` is left for the back office to compute.
+- The logo is `frontend/src/assets/logo.png`, imported by `components/Logo.tsx`.
+- The logo is `frontend/src/assets/logo.png`, imported by `components/Logo.tsx`.

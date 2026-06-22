@@ -1,41 +1,44 @@
-import { useEffect, type JSX } from 'react';
-import { BrowserRouter, Navigate, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
+import { useEffect, useRef, type JSX } from 'react';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { Chat } from './pages/Chat';
-import { CompleteProfile } from './pages/CompleteProfile';
 import { Detail } from './pages/Detail';
 import { Home } from './pages/Home';
 import { Login } from './pages/Login';
 import { Rights } from './pages/Rights';
 import { Signup } from './pages/Signup';
 import { Wizard } from './wizard/Wizard';
-import { WizardProvider } from './wizard/WizardContext';
+import { useWizard, WizardProvider } from './wizard/WizardContext';
 
-function GlobalAuthGuard({ children }: { children: React.ReactNode }) {
+/**
+ * Opens the personalization wizard (the onboarding) once per session when a
+ * logged-in user has not completed it yet. `amputation_type` is the persisted
+ * "completed" marker, written by the wizard on finish.
+ */
+function OnboardingGate(): null {
   const { session, profile, loading } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const { open, completed, start } = useWizard();
+  const prompted = useRef(false);
 
   useEffect(() => {
-    if (loading) return;
-    if (session && profile) {
-      // If missing critical data and not already on complete-profile
-      if ((!profile.age || !profile.amputation_type) && location.pathname !== '/complete-profile') {
-        navigate('/complete-profile', { replace: true });
-      }
+    if (loading || !session) return;
+    const needsOnboarding = !profile || !profile.amputation_type;
+    if (needsOnboarding && !open && !completed && !prompted.current) {
+      prompted.current = true;
+      start();
     }
-  }, [session, profile, loading, location.pathname, navigate]);
+  }, [loading, session, profile, open, completed, start]);
 
-  return <>{children}</>;
+  return null;
 }
 
 export function App(): JSX.Element {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <GlobalAuthGuard>
-          <WizardProvider>
+        <WizardProvider>
+          <OnboardingGate />
           <Routes>
             <Route element={<Layout />}>
               <Route path="/" element={<Home />} />
@@ -45,12 +48,12 @@ export function App(): JSX.Element {
             </Route>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/complete-profile" element={<CompleteProfile />} />
+            {/* Onboarding moved into the wizard modal; keep the old path harmless. */}
+            <Route path="/complete-profile" element={<Navigate to="/" replace />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
           <Wizard />
         </WizardProvider>
-        </GlobalAuthGuard>
       </AuthProvider>
     </BrowserRouter>
   );

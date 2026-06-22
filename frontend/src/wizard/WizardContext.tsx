@@ -7,8 +7,8 @@ import {
   type JSX,
   type ReactNode,
 } from 'react';
-import type { WizardAnswers, WizardStepId } from '../types';
-import { emptyAnswers, wizardSteps } from './wizardData';
+import type { LimbSlot, WizardAnswers } from '../types';
+import { buildSteps, emptyAnswers, slotOfLevelStep, type StepDef } from './wizardData';
 
 type Phase = 'steps' | 'summary';
 
@@ -22,18 +22,25 @@ interface WizardState {
 }
 
 export interface WizardContextValue extends WizardState {
-  steps: WizardStepId[];
-  currentStep: WizardStepId;
+  steps: StepDef[];
+  currentIndex: number;
+  currentStep: StepDef;
   start: () => void;
   resume: () => void;
   closeLater: () => void;
-  pick: (stepId: WizardStepId, key: string) => void;
-  skip: (stepId: WizardStepId) => void;
-  back: () => void;
-  jump: (stepId: WizardStepId) => void;
-  edit: () => void;
-  /** Marks the wizard closed without resetting answers (after navigating away). */
   dismiss: () => void;
+  edit: () => void;
+  back: () => void;
+  /** Single-select: set the value and advance. */
+  select: (id: string, key: string) => void;
+  /** Multi-select: toggle a key without advancing. */
+  toggle: (id: string, key: string) => void;
+  /** Number step: set the value without advancing. */
+  setNumber: (id: string, value: string) => void;
+  /** Advance from the current step (multi/number steps use this). */
+  next: () => void;
+  /** Skip an optional step. */
+  skip: (id: string) => void;
 }
 
 const WizardContext = createContext<WizardContextValue | null>(null);
@@ -47,12 +54,31 @@ const initialState: WizardState = {
   skipped: false,
 };
 
+/** Immutably write a single/number step's value into the answers. */
+function writeSingle(answers: WizardAnswers, id: string, value: string): WizardAnswers {
+  const slot = slotOfLevelStep(id);
+  if (slot) {
+    return { ...answers, levels: { ...answers.levels, [slot]: value } };
+  }
+  if (id === 'disabilityPct') {
+    return { ...answers, disabilityPct: value };
+  }
+  const next = { ...answers, [id]: value } as WizardAnswers;
+  // Selecting "no children" clears any previously chosen age groups.
+  if (id === 'hasChildren' && value !== 'yes') next.childAgeGroups = [];
+  return next;
+}
+
+function toggleInArray<T extends string>(list: readonly T[], key: T): T[] {
+  return list.includes(key) ? list.filter((k) => k !== key) : [...list, key];
+}
+
 export function WizardProvider({ children }: { children: ReactNode }): JSX.Element {
   const [state, setState] = useState<WizardState>(initialState);
 
-  const steps = useMemo(() => wizardSteps(state.answers), [state.answers]);
+  const steps = useMemo(() => buildSteps(state.answers), [state.answers]);
   const currentIndex = Math.min(state.stepIndex, steps.length - 1);
-  const currentStep: WizardStepId = steps[currentIndex] ?? 'limb';
+  const currentStep: StepDef = steps[currentIndex] ?? steps[0]!;
 
   const start = useCallback(() => {
     setState((s) => ({
@@ -67,73 +93,101 @@ export function WizardProvider({ children }: { children: ReactNode }): JSX.Eleme
   }, []);
 
   const resume = useCallback(() => setState((s) => ({ ...s, open: true })), []);
-
-  const closeLater = useCallback(() => {
-    setState((s) => ({ ...s, open: false, skipped: !s.completed }));
-  }, []);
-
+  const closeLater = useCallback(
+    () => setState((s) => ({ ...s, open: false, skipped: !s.completed })),
+    [],
+  );
   const dismiss = useCallback(() => setState((s) => ({ ...s, open: false })), []);
-
-  /** Applies updated answers and moves to the next step (or the summary). */
-  const applyAndAdvance = useCallback((stepId: WizardStepId, value: string) => {
-    setState((s) => {
-      // `value` is a validated option key (or '' for skip); the cast narrows the
-      // computed-key assignment back to the precise per-field unions.
-      const answers = { ...s.answers, [stepId]: value } as WizardAnswers;
-      if (stepId === 'limb') answers.level = '';
-      const nextSteps = wizardSteps(answers);
-      const idx = nextSteps.indexOf(stepId);
-      if (idx < 0) return { ...s, answers };
-      if (idx >= nextSteps.length - 1) {
-        return { ...s, answers, phase: 'summary', completed: true, skipped: false };
-      }
-      return { ...s, answers, stepIndex: idx + 1 };
-    });
-  }, []);
-
-  const pick = useCallback(
-    (stepId: WizardStepId, key: string) => applyAndAdvance(stepId, key),
-    [applyAndAdvance],
-  );
-
-  const skip = useCallback(
-    (stepId: WizardStepId) => applyAndAdvance(stepId, ''),
-    [applyAndAdvance],
-  );
+  const edit = useCallback(() => setState((s) => ({ ...s, phase: 'steps', stepIndex: 0 })), []);
 
   const back = useCallback(() => {
     setState((s) => {
       if (s.phase === 'summary') {
-        return { ...s, phase: 'steps', stepIndex: wizardSteps(s.answers).length - 1 };
+        return { ...s, phase: 'steps', stepIndex: buildSteps(s.answers).length - 1 };
       }
       if (s.stepIndex > 0) return { ...s, stepIndex: s.stepIndex - 1 };
       return s;
     });
   }, []);
 
-  const jump = useCallback((stepId: WizardStepId) => {
+  /** Advances from the step identified by `fromId`, recomputed against `answers`. */
+  const advanceFrom = useCallback((answers: WizardAnswers, fromId: string): Partial<WizardState> => {
+    const nextSteps = buildSteps(answers);
+    const idx = nextSteps.findIndex((step) => step.id === fromId);
+    if (idx < 0) return { answers };
+    if (idx >= nextSteps.length - 1) {
+      return { answers, phase: 'summary', completed: true, skipped: false };
+    }
+    return { answers, stepIndex: idx + 1 };
+  }, []);
+
+  const select = useCallback(
+    (id: string, key: string) => {
+      setState((s) => {
+        const answers = writeSingle(s.answers, id, key);
+        return { ...s, ...advanceFrom(answers, id) };
+      });
+    },
+    [advanceFrom],
+  );
+
+  const setNumber = useCallback((id: string, value: string) => {
+    setState((s) => ({ ...s, answers: writeSingle(s.answers, id, value) }));
+  }, []);
+
+  const toggle = useCallback((id: string, key: string) => {
     setState((s) => {
-      const idx = wizardSteps(s.answers).indexOf(stepId);
-      if (idx < 0) return s;
-      return { ...s, phase: 'steps', stepIndex: idx };
+      if (id === 'limbs') {
+        const limbs = toggleInArray<LimbSlot>(s.answers.limbs, key as LimbSlot);
+        // Drop the level answer for any limb that was just removed.
+        const levels = { ...s.answers.levels };
+        if (!limbs.includes(key as LimbSlot)) delete levels[key as LimbSlot];
+        return { ...s, answers: { ...s.answers, limbs, levels } };
+      }
+      if (id === 'childAgeGroups') {
+        const childAgeGroups = toggleInArray(s.answers.childAgeGroups, key as never);
+        return { ...s, answers: { ...s.answers, childAgeGroups } };
+      }
+      return s;
     });
   }, []);
 
-  const edit = useCallback(() => setState((s) => ({ ...s, phase: 'steps', stepIndex: 0 })), []);
+  const next = useCallback(() => {
+    setState((s) => {
+      const built = buildSteps(s.answers);
+      const idx = Math.min(s.stepIndex, built.length - 1);
+      const step = built[idx];
+      if (!step) return s;
+      return { ...s, ...advanceFrom(s.answers, step.id) };
+    });
+  }, [advanceFrom]);
+
+  const skip = useCallback(
+    (id: string) => {
+      setState((s) => {
+        const answers = writeSingle(s.answers, id, '');
+        return { ...s, ...advanceFrom(answers, id) };
+      });
+    },
+    [advanceFrom],
+  );
 
   const value: WizardContextValue = {
     ...state,
     steps,
+    currentIndex,
     currentStep,
     start,
     resume,
     closeLater,
-    pick,
-    skip,
-    back,
-    jump,
-    edit,
     dismiss,
+    edit,
+    back,
+    select,
+    toggle,
+    setNumber,
+    next,
+    skip,
   };
 
   return <WizardContext.Provider value={value}>{children}</WizardContext.Provider>;

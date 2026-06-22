@@ -1,13 +1,24 @@
-import { useState, type JSX } from 'react';
+import { useEffect, useRef, useState, type JSX } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BackArrowIcon, CheckCircleIcon, CheckIcon, ChevronLeftIcon, CloseIcon } from '../components/icons';
+import { saveOnboarding } from '../api/onboarding';
+import {
+  BackArrowIcon,
+  CheckCircleIcon,
+  CheckIcon,
+  ChevronLeftIcon,
+  CloseIcon,
+} from '../components/icons';
+import { useAuth } from '../hooks/useAuth';
 import { colors } from '../theme';
 import {
-  authorityFor,
+  authorityName,
+  causeToTopic,
+  isStepComplete,
+  multiValue,
   profileLine,
-  stepDefinition,
-  summaryNote,
+  singleValue,
   summaryRights,
+  type StepDef,
   type StepOption,
 } from './wizardData';
 import { useWizard } from './WizardContext';
@@ -38,19 +49,14 @@ function CloseButton({ onClick, onDark = false }: { onClick: () => void; onDark?
   );
 }
 
-function LaterButton({ onClick }: { onClick: () => void }): JSX.Element {
-  return (
-    <button
-      onClick={onClick}
-      style={{ background: 'none', border: 'none', color: colors.textFaint, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
-    >
-      אעשה זאת מאוחר יותר
-    </button>
-  );
+interface OptionRowProps {
+  option: StepOption;
+  selected: boolean;
+  showChevron: boolean;
+  onClick: () => void;
 }
 
-/** Shared option-row rendering for the stepper variant. */
-function StepperOption({ option, selected, onClick }: { option: StepOption; selected: boolean; onClick: () => void }): JSX.Element {
+function OptionRow({ option, selected, showChevron, onClick }: OptionRowProps): JSX.Element {
   const [hover, setHover] = useState(false);
   return (
     <button
@@ -77,37 +83,151 @@ function StepperOption({ option, selected, onClick }: { option: StepOption; sele
           flex: 'none',
           width: 24,
           height: 24,
-          borderRadius: '50%',
+          borderRadius: showChevron ? '50%' : 6,
           border: `2px solid ${selected ? colors.primaryBlue : '#CBD5E0'}`,
           background: selected ? colors.primaryBlue : colors.white,
           boxShadow: selected ? 'inset 0 0 0 4px #fff' : 'none',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
-      />
+      >
+        {selected && !showChevron ? <CheckIcon size={14} color={colors.white} strokeWidth={3} /> : null}
+      </span>
       <span style={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'flex-start', flex: 1 }}>
         <span style={{ fontSize: 19, fontWeight: 700, color: colors.darkBlue }}>{option.label}</span>
         {option.desc ? <span style={{ fontSize: 15, color: '#777' }}>{option.desc}</span> : null}
       </span>
-      <ChevronLeftIcon size={20} color={colors.primaryBlue} style={{ flex: 'none' }} />
+      {showChevron ? <ChevronLeftIcon size={20} color={colors.primaryBlue} style={{ flex: 'none' }} /> : null}
     </button>
+  );
+}
+
+function ContinueButton({ disabled, onClick }: { disabled: boolean; onClick: () => void }): JSX.Element {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        width: '100%',
+        marginTop: 16,
+        height: 52,
+        border: 'none',
+        borderRadius: 26,
+        background: disabled ? colors.placeholder : colors.primaryBlue,
+        color: colors.white,
+        fontSize: 17,
+        fontWeight: 700,
+        cursor: disabled ? 'default' : 'pointer',
+      }}
+    >
+      המשך
+    </button>
+  );
+}
+
+function StepBody({ step }: { step: StepDef }): JSX.Element {
+  const wizard = useWizard();
+  const { answers } = wizard;
+
+  if (step.kind === 'number') {
+    return (
+      <div>
+        <input
+          type="number"
+          inputMode="numeric"
+          dir="ltr"
+          value={singleValue(answers, step.id)}
+          onChange={(e) => wizard.setNumber(step.id, e.target.value)}
+          placeholder="לדוגמה: 50"
+          style={{
+            width: '100%',
+            height: 56,
+            border: `1.5px solid ${colors.border}`,
+            borderRadius: 8,
+            padding: '0 16px',
+            fontSize: 17,
+            color: colors.text,
+            background: colors.white,
+            outline: 'none',
+            textAlign: 'left',
+          }}
+        />
+        <ContinueButton disabled={false} onClick={wizard.next} />
+      </div>
+    );
+  }
+
+  if (step.kind === 'multi') {
+    const selected = multiValue(answers, step.id);
+    return (
+      <div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {step.options.map((option) => (
+            <OptionRow
+              key={option.key}
+              option={option}
+              selected={selected.includes(option.key)}
+              showChevron={false}
+              onClick={() => wizard.toggle(step.id, option.key)}
+            />
+          ))}
+        </div>
+        <ContinueButton disabled={!isStepComplete(answers, step)} onClick={wizard.next} />
+      </div>
+    );
+  }
+
+  // single
+  const current = singleValue(answers, step.id);
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {step.options.map((option) => (
+        <OptionRow
+          key={option.key}
+          option={option}
+          selected={current === option.key}
+          showChevron
+          onClick={() => wizard.select(step.id, option.key)}
+        />
+      ))}
+    </div>
   );
 }
 
 export function Wizard(): JSX.Element | null {
   const wizard = useWizard();
   const navigate = useNavigate();
+  const { user, refreshProfile } = useAuth();
+  const savedRef = useRef(false);
+
+  const open = wizard.open;
+  const phaseValue = wizard.phase;
+
+  // Persist answers to Supabase when the wizard reaches its summary.
+  useEffect(() => {
+    if (!open || phaseValue !== 'summary' || !user || savedRef.current) return;
+    savedRef.current = true;
+    saveOnboarding(user.id, wizard.answers)
+      .then(() => refreshProfile())
+      .catch((err: unknown) => {
+        savedRef.current = false;
+        console.error('Failed to save onboarding answers:', err);
+      });
+  }, [open, phaseValue, user, wizard.answers, refreshProfile]);
+
+  useEffect(() => {
+    if (!open) savedRef.current = false;
+  }, [open]);
 
   if (!wizard.open) return null;
 
-  const { answers, steps, currentStep, phase } = wizard;
-  const idx = Math.min(wizard.stepIndex, steps.length - 1);
-  const def = stepDefinition(currentStep, answers);
-  const canBack = idx > 0;
-  const authority = authorityFor(answers.cause);
+  const { answers, steps, currentIndex, currentStep, phase } = wizard;
 
   const toChat = (): void => {
     wizard.dismiss();
-    const cause = answers.cause;
-    navigate('/chat', cause ? { state: { topic: cause } } : undefined);
+    const topic = causeToTopic(answers.cause);
+    navigate('/chat', topic ? { state: { topic } } : undefined);
   };
   const toRights = (): void => {
     wizard.dismiss();
@@ -129,23 +249,12 @@ export function Wizard(): JSX.Element | null {
     overflowY: 'auto',
   };
 
-  const renderOptions = (): JSX.Element[] =>
-    def.options.map((option) => (
-      <StepperOption
-        key={option.key}
-        option={option}
-        selected={answers[currentStep] === option.key}
-        onClick={() => wizard.pick(currentStep, option.key)}
-      />
-    ));
-
   return (
     <div role="dialog" aria-modal="true" aria-label="התאמה אישית של הזכויות" dir="rtl" style={overlay}>
       {phase === 'summary' ? (
         <Summary
-          authName={authority.name}
+          authName={authorityName(answers.cause)}
           profile={profileLine(answers)}
-          note={summaryNote(answers)}
           rights={summaryRights(answers.cause)}
           onClose={wizard.closeLater}
           onEdit={wizard.edit}
@@ -165,7 +274,7 @@ export function Wizard(): JSX.Element | null {
           }}
         >
           <CloseButton onClick={wizard.closeLater} />
-          {canBack ? (
+          {currentIndex > 0 ? (
             <button
               onClick={wizard.back}
               style={{
@@ -190,31 +299,38 @@ export function Wizard(): JSX.Element | null {
           ) : null}
 
           <div style={{ display: 'flex', gap: 6, margin: '6px 0 8px' }}>
-            {steps.map((sid, i) => (
+            {steps.map((step, i) => (
               <span
-                key={sid}
+                key={step.id}
                 style={{
                   flex: 1,
                   height: 6,
                   borderRadius: 3,
-                  background: i < idx ? colors.primaryBlue : i === idx ? '#9FC4E0' : colors.borderSoft,
+                  background:
+                    i < currentIndex ? colors.primaryBlue : i === currentIndex ? '#9FC4E0' : colors.borderSoft,
                 }}
               />
             ))}
           </div>
           <div style={{ fontSize: 14, color: colors.textFaint, fontWeight: 600, marginBottom: 16 }}>
-            שלב {idx + 1} מתוך {steps.length}
+            שלב {currentIndex + 1} מתוך {steps.length}
           </div>
           <h2 style={{ fontSize: 26, color: colors.darkBlue, fontWeight: 800, margin: '0 0 8px', lineHeight: 1.25 }}>
-            {def.title}
+            {currentStep.title}
           </h2>
-          <p style={{ fontSize: 17, color: colors.textMuted, margin: '0 0 22px', lineHeight: 1.5 }}>{def.help}</p>
+          {currentStep.help ? (
+            <p style={{ fontSize: 17, color: colors.textMuted, margin: '0 0 22px', lineHeight: 1.5 }}>
+              {currentStep.help}
+            </p>
+          ) : (
+            <div style={{ height: 6 }} />
+          )}
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>{renderOptions()}</div>
+          <StepBody step={currentStep} />
 
-          {def.skippable ? (
+          {currentStep.skippable ? (
             <button
-              onClick={() => wizard.skip(currentStep)}
+              onClick={() => wizard.skip(currentStep.id)}
               style={{
                 width: '100%',
                 marginTop: 14,
@@ -232,7 +348,12 @@ export function Wizard(): JSX.Element | null {
           ) : null}
 
           <div style={{ marginTop: 16, borderTop: '1px solid #EEE', paddingTop: 14, textAlign: 'center' }}>
-            <LaterButton onClick={wizard.closeLater} />
+            <button
+              onClick={wizard.closeLater}
+              style={{ background: 'none', border: 'none', color: colors.textFaint, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+            >
+              אעשה זאת מאוחר יותר
+            </button>
           </div>
         </div>
       )}
@@ -243,7 +364,6 @@ export function Wizard(): JSX.Element | null {
 interface SummaryProps {
   authName: string;
   profile: string;
-  note: string;
   rights: readonly { h: string; items: readonly string[] }[];
   onClose: () => void;
   onEdit: () => void;
@@ -251,19 +371,22 @@ interface SummaryProps {
   onRights: () => void;
 }
 
-function Summary({ authName, profile, note, rights, onClose, onEdit, onChat, onRights }: SummaryProps): JSX.Element {
+function Summary({ authName, profile, rights, onClose, onEdit, onChat, onRights }: SummaryProps): JSX.Element {
   return (
     <div
       style={{
         width: '100%',
         maxWidth: 620,
+        maxHeight: 'calc(100dvh - 44px)',
+        display: 'flex',
+        flexDirection: 'column',
         background: colors.white,
         borderRadius: 22,
         boxShadow: '0 24px 60px rgba(0,0,0,.3)',
         overflow: 'hidden',
       }}
     >
-      <div style={{ position: 'relative', background: colors.headerBlue, padding: '30px 30px 26px', color: colors.white }}>
+      <div style={{ position: 'relative', flex: 'none', background: colors.headerBlue, padding: '30px 30px 26px', color: colors.white }}>
         <CloseButton onClick={onClose} onDark />
         <div
           style={{
@@ -285,23 +408,7 @@ function Summary({ authName, profile, note, rights, onClose, onEdit, onChat, onR
         <h2 style={{ fontSize: 'clamp(22px,3vw,28px)', fontWeight: 800, margin: '0 0 8px', lineHeight: 1.2 }}>{authName}</h2>
         {profile ? <div style={{ fontSize: 16, color: 'rgba(255,255,255,.88)' }}>{profile}</div> : null}
       </div>
-      <div style={{ padding: '24px 30px 28px' }}>
-        {note ? (
-          <div
-            style={{
-              background: colors.blueTint,
-              border: `1px solid ${colors.blueTintBorder}`,
-              borderRadius: 14,
-              padding: '15px 18px',
-              marginBottom: 20,
-              fontSize: 16,
-              color: colors.headerBlue,
-              lineHeight: 1.55,
-            }}
-          >
-            {note}
-          </div>
-        ) : null}
+      <div style={{ padding: '24px 30px 28px', overflowY: 'auto', flex: 1, minHeight: 0 }}>
         <div style={{ fontSize: 18, fontWeight: 800, color: colors.darkBlue, margin: '2px 0 14px' }}>
           הזכויות שרלוונטיות עבורך
         </div>
