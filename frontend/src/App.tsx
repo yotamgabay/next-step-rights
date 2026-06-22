@@ -8,6 +8,7 @@ import { Home } from './pages/Home';
 import { Login } from './pages/Login';
 import { Rights } from './pages/Rights';
 import { Signup } from './pages/Signup';
+import { Tracker } from './pages/Tracker';
 import { Wizard } from './wizard/Wizard';
 import { useWizard, WizardProvider } from './wizard/WizardContext';
 
@@ -45,6 +46,7 @@ export function App(): JSX.Element {
               <Route path="/chat" element={<Chat />} />
               <Route path="/rights" element={<Rights />} />
               <Route path="/rights/:id" element={<Detail />} />
+              <Route path="/tracker" element={<Tracker />} />
             </Route>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />

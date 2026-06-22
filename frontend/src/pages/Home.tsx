@@ -1,5 +1,4 @@
 import { useState, type JSX } from 'react';
-import { EligibleRights } from '../components/EligibleRights';
 import { useNavigate } from 'react-router-dom';
 import { CardButton, DetailsArrow, Tag } from '../components/Card';
 import { ChatDisclaimer } from '../components/ChatDisclaimer';
