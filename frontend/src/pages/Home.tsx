@@ -1,7 +1,7 @@
 import { useState, type JSX } from 'react';
-import { EligibleRights } from '../components/EligibleRights';
 import { useNavigate } from 'react-router-dom';
 import { CardButton, DetailsArrow, Tag } from '../components/Card';
+import { CategoryRightsModal } from '../components/CategoryRightsModal';
 import { ChatDisclaimer } from '../components/ChatDisclaimer';
 import {
   CardIcon,
@@ -11,15 +11,15 @@ import {
   MobilityIcon,
   SendIcon,
 } from '../components/icons';
-import { causeIds, topics } from '../data/topics';
+
 import { useAuth } from '../hooks/useAuth';
 import { colors, maxWidth } from '../theme';
-import type { TopicId } from '../types';
+
 import { authorityName } from '../wizard/wizardData';
 import { useWizard } from '../wizard/WizardContext';
 
 interface FeatureCard {
-  id: TopicId;
+  id: string;
   title: string;
   desc: string;
   icon: JSX.Element;
@@ -75,7 +75,7 @@ function ResumeStrip({ onResume }: { onResume: () => void }): JSX.Element {
             lineHeight: 1.45,
           }}
         >
-          טרם השלמת את ההתאמה האישית — נשלים כמה פרטים כדי להתאים לך את הזכויות והגורם המטפל.
+          טרם השלמת את ההתאמה האישית - נשלים כמה פרטים כדי להתאים לך את הזכויות והגורם המטפל.
         </span>
         <button
           onClick={onResume}
@@ -149,6 +149,7 @@ export function Home(): JSX.Element {
   const wizard = useWizard();
   const { session, profile } = useAuth();
   const [query, setQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const submit = (e: React.FormEvent): void => {
     e.preventDefault();
@@ -157,7 +158,6 @@ export function Home(): JSX.Element {
     navigate('/chat', q ? { state: { query: q } } : undefined);
   };
 
-  const openTopic = (id: TopicId): void => navigate(`/rights/${id}`, { state: { from: 'home' } });
 
   // Onboarding completion is driven by the persisted profile, not the ephemeral
   // wizard state (which resets on reload).
@@ -171,7 +171,7 @@ export function Home(): JSX.Element {
       {showResume ? <ResumeStrip onResume={wizard.resume} /> : null}
       {showProfile ? <ProfileStrip authName={authName} onEdit={wizard.resume} /> : null}
 
-      <section style={{ background: colors.blueTint }}>
+      <section aria-labelledby="home-hero" style={{ background: colors.blueTint }}>
         <div style={{ maxWidth: 880, margin: '0 auto', padding: '72px 24px 64px', textAlign: 'center' }}>
           <div
             style={{
@@ -188,6 +188,7 @@ export function Home(): JSX.Element {
             הבית של קטועי הגפיים בישראל
           </div>
           <h1
+            id="home-hero"
             style={{
               fontSize: 'clamp(28px,4.4vw,42px)',
               lineHeight: 1.18,
@@ -208,7 +209,7 @@ export function Home(): JSX.Element {
               maxWidth: 640,
             }}
           >
-            אנחנו כאן כדי לעזור לך להבין מה מגיע לך ואיך לממש את זה — בלי בירוקרטיה מסובכת. שאל/י כל שאלה,
+            אנחנו כאן כדי לעזור לך להבין מה מגיע לך ואיך לממש את זה - בלי בירוקרטיה מסובכת. שאל/י כל שאלה,
             והעוזר הדיגיטלי יסביר בשפה פשוטה.
           </p>
           <form
@@ -272,10 +273,9 @@ export function Home(): JSX.Element {
         </div>
       </section>
 
-      <EligibleRights />
-
-      <section style={{ maxWidth, margin: '0 auto', padding: '56px 24px 24px' }}>
+      <section aria-labelledby="home-features" style={{ maxWidth, margin: '0 auto', padding: '56px 24px 24px' }}>
         <h2
+          id="home-features"
           style={{
             fontSize: 'clamp(22px,2.6vw,28px)',
             color: colors.darkBlue,
@@ -296,7 +296,7 @@ export function Home(): JSX.Element {
           }}
         >
           {featureCards.map((card) => (
-            <CardButton key={card.id} onClick={() => openTopic(card.id)}>
+            <CardButton key={card.id} onClick={() => setSelectedCategory(card.title)}>
               <span
                 style={{
                   width: 56,
@@ -318,48 +318,11 @@ export function Home(): JSX.Element {
         </div>
       </section>
 
-      <section style={{ background: colors.sectionBg, marginTop: 32 }}>
-        <div style={{ maxWidth, margin: '0 auto', padding: '56px 24px' }}>
-          <h2
-            style={{
-              fontSize: 'clamp(22px,2.6vw,28px)',
-              color: colors.darkBlue,
-              fontWeight: 700,
-              margin: '0 0 6px',
-            }}
-          >
-            הזכויות לפי סוג הקטיעה
-          </h2>
-          <p style={{ fontSize: 18, color: colors.textMuted, margin: '0 0 28px', maxWidth: 680, lineHeight: 1.5 }}>
-            הגורם המטפל והזכויות משתנים לפי הנסיבות שבהן אירעה הקטיעה. בחר/י את המצב שמתאים לך:
-          </p>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))',
-              gap: 20,
-            }}
-          >
-            {causeIds.map((id) => {
-              const topic = topics[id];
-              return (
-                <CardButton key={id} onClick={() => openTopic(id)}>
-                  <Tag>{topic.tag}</Tag>
-                  <span style={{ fontSize: 20, fontWeight: 700, color: colors.darkBlue, lineHeight: 1.3 }}>
-                    {topic.title}
-                  </span>
-                  <span style={{ fontSize: 16, color: colors.textMuted }}>גורם מטפל: {topic.body}</span>
-                  <DetailsArrow />
-                </CardButton>
-              );
-            })}
-          </div>
-        </div>
-      </section>
 
-      <section style={{ background: colors.headerBlue }}>
+      <section aria-labelledby="home-cta" style={{ background: colors.headerBlue }}>
         <div style={{ maxWidth: 760, margin: '0 auto', padding: '60px 24px', textAlign: 'center' }}>
           <h2
+            id="home-cta"
             style={{
               fontSize: 'clamp(22px,2.8vw,30px)',
               color: colors.white,
@@ -370,7 +333,7 @@ export function Home(): JSX.Element {
             לא בטוח/ה מאיפה להתחיל?
           </h2>
           <p style={{ fontSize: 19, color: 'rgba(255,255,255,.9)', lineHeight: 1.55, margin: '0 0 28px' }}>
-            שאל/י את העוזר הדיגיטלי — הוא יכוון אותך לזכויות שמתאימות בדיוק למצב שלך.
+            שאל/י את העוזר הדיגיטלי - הוא יכוון אותך לזכויות שמתאימות בדיוק למצב שלך.
           </p>
           <button
             onClick={() => navigate('/chat')}
@@ -390,6 +353,7 @@ export function Home(): JSX.Element {
           </button>
         </div>
       </section>
+      {selectedCategory && <CategoryRightsModal category={selectedCategory} onClose={() => setSelectedCategory(null)} />}
     </div>
   );
 }

@@ -250,7 +250,7 @@ BEGIN
   VALUES (
     NEW.id,
     -- Extracts the name from Google SSO metadata, or defaults to a generic name
-    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', '×ž×©×ª×ž×© ×—×“×©')
+    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', '×ž×©×ª×ž×© ×-×“×©')
   );
   RETURN NEW;
 END;

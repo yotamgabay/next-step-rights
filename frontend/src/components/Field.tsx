@@ -1,4 +1,4 @@
-import { useState, type JSX } from 'react';
+import { useState, useId, type JSX } from 'react';
 import { colors } from '../theme';
 import { AlertIcon, EyeIcon } from './icons';
 
@@ -23,9 +23,11 @@ function inputStyle(opts: {
   };
 }
 
-function FieldError({ message }: { message: string }): JSX.Element {
+function FieldError({ message, id }: { message: string; id?: string }): JSX.Element {
   return (
     <div
+      id={id}
+      role="alert"
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -45,9 +47,10 @@ interface LabelWrapProps {
   label: React.ReactNode;
   children: React.ReactNode;
   error?: string | undefined;
+  errorId?: string;
 }
 
-function LabelWrap({ label, children, error }: LabelWrapProps): JSX.Element {
+function LabelWrap({ label, children, error, errorId }: LabelWrapProps): JSX.Element {
   return (
     <label style={{ display: 'block' }}>
       <span
@@ -62,7 +65,7 @@ function LabelWrap({ label, children, error }: LabelWrapProps): JSX.Element {
         {label}
       </span>
       {children}
-      {error ? <FieldError message={error} /> : null}
+      {error ? <FieldError message={error} id={errorId || ""} /> : null}
     </label>
   );
 }
@@ -87,8 +90,9 @@ export function TextField({
   error,
 }: TextFieldProps): JSX.Element {
   const [focused, setFocused] = useState(false);
+  const errorId = useId();
   return (
-    <LabelWrap label={label} error={error}>
+    <LabelWrap label={label} error={error} errorId={errorId}>
       <input
         type={type}
         dir={ltr ? 'ltr' : undefined}
@@ -97,6 +101,8 @@ export function TextField({
         onChange={(e) => onChange(e.target.value)}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
+        aria-invalid={!!error}
+        aria-describedby={error ? errorId : undefined}
         style={inputStyle({ ltr, hasError: !!error, focused })}
       />
     </LabelWrap>
@@ -120,8 +126,9 @@ export function PasswordField({
 }: PasswordFieldProps): JSX.Element {
   const [focused, setFocused] = useState(false);
   const [visible, setVisible] = useState(false);
+  const errorId = useId();
   return (
-    <LabelWrap label={label} error={error}>
+    <LabelWrap label={label} error={error} errorId={errorId}>
       <div style={{ position: 'relative' }}>
         <input
           type={visible ? 'text' : 'password'}
@@ -130,6 +137,8 @@ export function PasswordField({
           onChange={(e) => onChange(e.target.value)}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
+          aria-invalid={!!error}
+          aria-describedby={error ? errorId : undefined}
           style={inputStyle({ ltr: false, hasError: !!error, focused, paddingInlineStart: 48 })}
         />
         <button
@@ -177,13 +186,16 @@ export function SelectField({
   error,
 }: SelectFieldProps): JSX.Element {
   const [focused, setFocused] = useState(false);
+  const errorId = useId();
   return (
-    <LabelWrap label={label} error={error}>
+    <LabelWrap label={label} error={error} errorId={errorId}>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
+        aria-invalid={!!error}
+        aria-describedby={error ? errorId : undefined}
         style={{ ...inputStyle({ ltr: false, hasError: !!error, focused }), paddingInlineEnd: 14 }}
       >
         <option value="">{placeholder}</option>
@@ -247,6 +259,7 @@ export function PrimaryButton({
       type={type}
       onClick={onClick}
       disabled={busy}
+      aria-busy={busy}
       style={{
         width: '100%',
         height: 56,

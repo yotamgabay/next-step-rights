@@ -45,12 +45,14 @@ export function AuthShell({ maxWidth, children }: AuthShellProps): JSX.Element {
       </div>
       <button
         onClick={() => navigate('/')}
-        aria-label="הצעד הבא — לדף הבית"
+        aria-label="הצעד הבא - לדף הבית"
         style={{ background: 'none', border: 'none', cursor: 'pointer', margin: '6px 0 24px' }}
       >
         <Logo height={52} />
       </button>
-      {children}
+      <main style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        {children}
+      </main>
     </div>
   );
 }

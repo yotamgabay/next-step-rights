@@ -1,768 +1,1367 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="./support.js"></script>
 </head>
+
 <body>
-<x-dc>
-<helmet>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
-  body { font-family: 'Assistant', 'Noto Sans Hebrew', sans-serif; color: #333333; background: #F8F8F8; direction: rtl; }
-  ::placeholder { color: #AAAAAA; }
-  button, input, select { font-family: inherit; }
-  :focus-visible { outline: 3px solid #1E7FC3; outline-offset: 2px; border-radius: 6px; }
-  @keyframes blink { 0%, 80%, 100% { opacity: .2; } 40% { opacity: 1; } }
-  [data-bottom-nav] { display: none; }
-  @media (max-width: 760px) {
-    [data-desktop-nav] { display: none !important; }
-    [data-bottom-nav] { display: flex !important; }
-    [data-app-pad] { padding-bottom: 70px !important; }
-    [data-chat-input] { bottom: 82px !important; }
-    [data-hdr] { padding: 11px 14px !important; gap: 10px !important; flex-wrap: nowrap !important; }
-    [data-hdr] img { height: 34px !important; }
-    [data-hdr-auth] { gap: 8px !important; flex-wrap: nowrap !important; }
-    [data-hdr-auth] button { height: 38px !important; padding: 0 13px !important; font-size: 14px !important; }
-  }
-  @media (max-width: 600px) {
-    [data-hero] { padding: 40px 16px 32px !important; }
-    [data-sec] { padding-top: 30px !important; padding-bottom: 20px !important; padding-inline: 16px !important; }
-    [data-page] { padding-top: 26px !important; padding-bottom: 40px !important; padding-inline: 16px !important; }
-    [data-cta-band] { padding: 40px 18px !important; }
-    [data-grid] { gap: 12px !important; }
-    [data-card] { padding: 15px 16px !important; gap: 7px !important; }
-    [data-card-icon] { width: 44px !important; height: 44px !important; border-radius: 12px !important; }
-    [data-card-icon] svg { width: 24px !important; height: 24px !important; }
-    [data-send-btn] { padding: 0 18px !important; }
-    [data-send-icon] { display: none !important; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
-  }
-</style>
-</helmet>
+  <x-dc>
+    <helmet>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+      <style>
+        * {
+          -webkit-tap-highlight-color: transparent;
+          box-sizing: border-box;
+        }
 
-<div dir="rtl" data-app-pad style="min-height:100vh;display:flex;flex-direction:column;background:#F8F8F8;font-family:'Assistant','Noto Sans Hebrew',sans-serif;">
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+        }
 
-  <sc-if value="{{ showChrome }}" hint-placeholder-val="{{ true }}">
-  <header style="background:#165D91;position:relative;flex:none;">
-    <div data-hdr style="max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;">
-      <button onClick="{{ go.home }}" aria-label="הצעד הבא — לדף הבית" style="background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;">
-        <img src="assets/logo.png" alt="הצעד הבא" style="height:44px;width:auto;background:#fff;border-radius:8px;padding:5px 10px;display:block;"/>
-      </button>
-      <nav data-desktop-nav style="display:flex;gap:6px;flex-wrap:wrap;">
-        <button onClick="{{ go.home }}" style="{{ navStyle.home }}">בית</button>
-        <button onClick="{{ go.chat }}" style="{{ navStyle.chat }}">העוזר הדיגיטלי</button>
-        <button onClick="{{ go.rights }}" style="{{ navStyle.rights }}">הזכויות שלי</button>
-      </nav>
-      <div data-hdr-auth style="margin-inline-start:auto;display:flex;gap:10px;flex-wrap:wrap;">
-        <button onClick="{{ go.login }}" style="height:44px;padding:0 22px;border-radius:22px;border:1.5px solid rgba(255,255,255,.6);background:transparent;color:#fff;font-size:16px;font-weight:600;cursor:pointer;">התחברות</button>
-        <button onClick="{{ go.signup }}" style="height:44px;padding:0 22px;border-radius:22px;border:none;background:#F06723;color:#fff;font-size:16px;font-weight:700;cursor:pointer;">הרשמה</button>
-      </div>
-    </div>
-    <div style="height:3px;background:#F06723;"></div>
-  </header>
-  </sc-if>
+        body {
+          font-family: 'Assistant', 'Noto Sans Hebrew', sans-serif;
+          color: #333333;
+          background: #F8F8F8;
+          direction: rtl;
+        }
 
-  <main style="flex:1 0 auto;">
+        ::placeholder {
+          color: #AAAAAA;
+        }
 
-  <!-- ================= HOME ================= -->
-  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
-  <div>
-    <sc-if value="{{ showResume }}" hint-placeholder-val="{{ false }}">
-    <div style="background:#FDEBD9;border-bottom:1px solid #F6C9A6;">
-      <div style="max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C2511A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 2"/></svg>
-        <span style="font-size:16px;color:#C2511A;font-weight:600;flex:1;min-width:200px;line-height:1.45;">טרם השלמת את ההתאמה האישית — נשלים כמה פרטים כדי להתאים לך את הזכויות והגורם המטפל.</span>
-        <button onClick="{{ resumeWizard }}" style="height:42px;padding:0 20px;border:none;border-radius:21px;background:#F06723;color:#fff;font-size:15px;font-weight:700;cursor:pointer;flex:none;">להמשך ההתאמה</button>
-      </div>
-    </div>
-    </sc-if>
-    <sc-if value="{{ showProfileStrip }}" hint-placeholder-val="{{ false }}">
-    <div style="background:#EDF5FB;border-bottom:1px solid #D6E3EF;">
-      <div style="max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2E8B3F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
-        <span style="font-size:16px;color:#165D91;font-weight:600;flex:1;min-width:200px;line-height:1.45;">ההתאמה הושלמה · הגורם המטפל שלך: <strong style="color:#0D3D5E;">{{ profileAuthName }}</strong></span>
-        <button onClick="{{ resumeWizard }}" style="background:none;border:none;color:#165D91;font-size:15px;font-weight:700;cursor:pointer;padding:8px 2px;flex:none;">עדכון פרטים ›</button>
-      </div>
-    </div>
-    </sc-if>
-    <section style="background:#EDF5FB;">
-      <div data-hero style="max-width:880px;margin:0 auto;padding:72px 24px 64px;text-align:center;">
-        <div style="display:inline-block;background:#FDEBD9;color:#C2511A;font-size:15px;font-weight:700;padding:7px 16px;border-radius:20px;margin-bottom:20px;">הבית של קטועי הגפיים בישראל</div>
-        <h1 style="font-size:clamp(28px,4.4vw,42px);line-height:1.18;color:#0D3D5E;font-weight:800;margin:0 auto 18px;max-width:720px;text-wrap:balance;">כל הזכויות שלך, במקום אחד וברור</h1>
-        <p style="font-size:clamp(17px,2.2vw,21px);color:#333;line-height:1.55;margin:0 auto 32px;max-width:640px;">אנחנו כאן כדי לעזור לך להבין מה מגיע לך ואיך לממש את זה — בלי בירוקרטיה מסובכת. שאל/י כל שאלה, והעוזר הדיגיטלי יסביר בשפה פשוטה.</p>
-        <form onSubmit="{{ onHomeSubmit }}" style="display:flex;gap:10px;max-width:660px;margin:0 auto;background:#fff;border:1.5px solid #D6E3EF;border-radius:18px;padding:9px;box-shadow:0 8px 26px rgba(13,61,94,.10);flex-wrap:nowrap;">
-          <input value="{{ homeQuery }}" onChange="{{ onHomeInput }}" aria-label="כתיבת שאלה לעוזר הדיגיטלי" placeholder="לדוגמה: איך מגישים בקשה לפרוטזה?" style="flex:1 1 0;min-width:0;border:none;height:50px;padding:0 14px;font-size:18px;color:#333;background:none;outline:none;"/>
-          <button type="submit" data-send-btn style="flex:none;height:50px;padding:0 24px;border:none;border-radius:25px;background:#1E7FC3;color:#fff;font-size:17px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
-            <svg data-send-icon width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="20" y1="4" x2="9.5" y2="14.5"/><polygon points="20 4 13.5 20 9.5 14.5 4 10.5 20 4"/></svg>
-            שליחה
-          </button>
-        </form>
-        <p style="font-size:15px;color:#7A7A7A;margin:14px 0 0;">אפשר גם לבחור נושא מהרשימה למטה</p>
-      </div>
-    </section>
+        button,
+        input,
+        select {
+          font-family: inherit;
+        }
 
-    <section data-sec style="max-width:1200px;margin:0 auto;padding:56px 24px 24px;">
-      <h2 style="font-size:clamp(22px,2.6vw,28px);color:#0D3D5E;font-weight:700;margin:0 0 6px;">במה אפשר לעזור?</h2>
-      <p style="font-size:18px;color:#555;margin:0 0 28px;">קיצורי דרך לזכויות הנפוצות ביותר.</p>
-      <div data-grid style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;">
-        <button data-card onClick="{{ open.medrights }}" style="text-align:right;background:#fff;border:1px solid #DDD;border-radius:12px;padding:26px 24px;cursor:pointer;display:flex;flex-direction:column;gap:14px;transition:box-shadow .15s,transform .15s,border-color .15s;" style-hover="border-color:#1E7FC3;box-shadow:0 10px 26px rgba(13,61,94,.12);transform:translateY(-3px);background:#fff;text-align:right;">
-          <span data-card-icon style="width:56px;height:56px;border-radius:14px;background:#D6EAFA;display:flex;align-items:center;justify-content:center;">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#165D91" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.5 4.04 3 5.5l7 7Z"/></svg>
-          </span>
-          <span style="font-size:21px;font-weight:700;color:#0D3D5E;">זכויות רפואיות</span>
-          <span style="font-size:16px;color:#555;line-height:1.5;">פרוטזות, מכשירי שיקום, טיפולים והחזרים כספיים.</span>
-          <span style="font-size:16px;font-weight:700;color:#1E7FC3;">לפרטים ‹</span>
-        </button>
-        <button data-card onClick="{{ open.financial }}" style="text-align:right;background:#fff;border:1px solid #DDD;border-radius:12px;padding:26px 24px;cursor:pointer;display:flex;flex-direction:column;gap:14px;transition:box-shadow .15s,transform .15s,border-color .15s;" style-hover="border-color:#1E7FC3;box-shadow:0 10px 26px rgba(13,61,94,.12);transform:translateY(-3px);background:#fff;text-align:right;">
-          <span data-card-icon style="width:56px;height:56px;border-radius:14px;background:#FDEBD9;display:flex;align-items:center;justify-content:center;">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C2511A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="12" cy="12" r="3"/><line x1="6" y1="12" x2="6.01" y2="12"/><line x1="18" y1="12" x2="18.01" y2="12"/></svg>
-          </span>
-          <span style="font-size:21px;font-weight:700;color:#0D3D5E;">זכויות כספיות</span>
-          <span style="font-size:16px;color:#555;line-height:1.5;">קצבאות, מענקים, פטורים והנחות.</span>
-          <span style="font-size:16px;font-weight:700;color:#1E7FC3;">לפרטים ‹</span>
-        </button>
-        <button data-card onClick="{{ open.mobility }}" style="text-align:right;background:#fff;border:1px solid #DDD;border-radius:12px;padding:26px 24px;cursor:pointer;display:flex;flex-direction:column;gap:14px;transition:box-shadow .15s,transform .15s,border-color .15s;" style-hover="border-color:#1E7FC3;box-shadow:0 10px 26px rgba(13,61,94,.12);transform:translateY(-3px);background:#fff;text-align:right;">
-          <span data-card-icon style="width:56px;height:56px;border-radius:14px;background:#DFFAE3;display:flex;align-items:center;justify-content:center;">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2E8B3F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.5" r="2"/><path d="M12 8v6l4 4"/><path d="M12 11l-4 1"/><path d="M8 21a5 5 0 0 1 4-8"/></svg>
-          </span>
-          <span style="font-size:21px;font-weight:700;color:#0D3D5E;">ניידות ונגישות</span>
-          <span style="font-size:16px;color:#555;line-height:1.5;">תו נכה, רכב, נגישות והתאמות דיור.</span>
-          <span style="font-size:16px;font-weight:700;color:#1E7FC3;">לפרטים ‹</span>
-        </button>
-      </div>
-    </section>
+        :focus-visible {
+          outline: 3px solid #1E7FC3;
+          outline-offset: 2px;
+          border-radius: 6px;
+        }
 
-    <section style="background:#F4F4F4;margin-top:32px;">
-      <div data-sec style="max-width:1200px;margin:0 auto;padding:56px 24px;">
-        <h2 style="font-size:clamp(22px,2.6vw,28px);color:#0D3D5E;font-weight:700;margin:0 0 6px;">הזכויות לפי סוג הקטיעה</h2>
-        <p style="font-size:18px;color:#555;margin:0 0 28px;max-width:680px;line-height:1.5;">הגורם המטפל והזכויות משתנים לפי הנסיבות שבהן אירעה הקטיעה. בחר/י את המצב שמתאים לך:</p>
-        <div data-grid style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;">
-          <sc-for list="{{ causeCards }}" as="t" hint-placeholder-count="4">
-            <button data-card onClick="{{ t.onClick }}" style="text-align:right;background:#fff;border:1px solid #DDD;border-radius:12px;padding:24px;cursor:pointer;display:flex;flex-direction:column;gap:12px;transition:box-shadow .15s,transform .15s,border-color .15s;" style-hover="border-color:#1E7FC3;box-shadow:0 10px 26px rgba(13,61,94,.12);transform:translateY(-3px);background:#fff;text-align:right;">
-              <span style="align-self:flex-start;background:#EDF5FB;color:#165D91;font-size:14px;font-weight:600;padding:5px 12px;border-radius:16px;">{{ t.tag }}</span>
-              <span style="font-size:20px;font-weight:700;color:#0D3D5E;line-height:1.3;">{{ t.title }}</span>
-              <span style="font-size:16px;color:#555;">גורם מטפל: {{ t.body }}</span>
-              <span style="font-size:16px;font-weight:700;color:#1E7FC3;margin-top:2px;">לפרטים ‹</span>
+        @keyframes blink {
+
+          0%,
+          80%,
+          100% {
+            opacity: .2;
+          }
+
+          40% {
+            opacity: 1;
+          }
+        }
+
+        [data-bottom-nav] {
+          display: none;
+        }
+
+        @media (max-width: 760px) {
+          [data-desktop-nav] {
+            display: none !important;
+          }
+
+          [data-bottom-nav] {
+            display: flex !important;
+          }
+
+          [data-app-pad] {
+            padding-bottom: 70px !important;
+          }
+
+          [data-chat-input] {
+            bottom: 82px !important;
+          }
+
+          [data-hdr] {
+            padding: 11px 14px !important;
+            gap: 10px !important;
+            flex-wrap: nowrap !important;
+          }
+
+          [data-hdr] img {
+            height: 34px !important;
+          }
+
+          [data-hdr-auth] {
+            gap: 8px !important;
+            flex-wrap: nowrap !important;
+          }
+
+          [data-hdr-auth] button {
+            height: 38px !important;
+            padding: 0 13px !important;
+            font-size: 14px !important;
+          }
+        }
+
+        @media (max-width: 600px) {
+          [data-hero] {
+            padding: 40px 16px 32px !important;
+          }
+
+          [data-sec] {
+            padding-top: 30px !important;
+            padding-bottom: 20px !important;
+            padding-inline: 16px !important;
+          }
+
+          [data-page] {
+            padding-top: 26px !important;
+            padding-bottom: 40px !important;
+            padding-inline: 16px !important;
+          }
+
+          [data-cta-band] {
+            padding: 40px 18px !important;
+          }
+
+          [data-grid] {
+            gap: 12px !important;
+          }
+
+          [data-card] {
+            padding: 15px 16px !important;
+            gap: 7px !important;
+          }
+
+          [data-card-icon] {
+            width: 44px !important;
+            height: 44px !important;
+            border-radius: 12px !important;
+          }
+
+          [data-card-icon] svg {
+            width: 24px !important;
+            height: 24px !important;
+          }
+
+          [data-send-btn] {
+            padding: 0 18px !important;
+          }
+
+          [data-send-icon] {
+            display: none !important;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+          *,
+          *::before,
+          *::after {
+            animation-duration: .001ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: .001ms !important;
+            scroll-behavior: auto !important;
+          }
+        }
+      </style>
+    </helmet>
+
+    <div dir="rtl" data-app-pad
+      style="min-height:100vh;display:flex;flex-direction:column;background:#F8F8F8;font-family:'Assistant','Noto Sans Hebrew',sans-serif;">
+
+      <sc-if value="{{ showChrome }}" hint-placeholder-val="{{ true }}">
+        <header style="background:#165D91;position:relative;flex:none;">
+          <div data-hdr
+            style="max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;">
+            <button onClick="{{ go.home }}" aria-label="הצעד הבא - לדף הבית"
+              style="background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;">
+              <img src="assets/logo.png" alt="הצעד הבא"
+                style="height:44px;width:auto;background:#fff;border-radius:8px;padding:5px 10px;display:block;" />
             </button>
-          </sc-for>
-        </div>
-      </div>
-    </section>
-
-    <section style="background:#165D91;">
-      <div data-cta-band style="max-width:760px;margin:0 auto;padding:60px 24px;text-align:center;">
-        <h2 style="font-size:clamp(22px,2.8vw,30px);color:#fff;font-weight:700;margin:0 0 14px;">לא בטוח/ה מאיפה להתחיל?</h2>
-        <p style="font-size:19px;color:rgba(255,255,255,.9);line-height:1.55;margin:0 0 28px;">שאל/י את העוזר הדיגיטלי — הוא יכוון אותך לזכויות שמתאימות בדיוק למצב שלך.</p>
-        <button onClick="{{ go.chat }}" style="height:56px;padding:0 38px;border:none;border-radius:28px;background:#F06723;color:#fff;font-size:18px;font-weight:700;cursor:pointer;">פתיחת העוזר הדיגיטלי</button>
-      </div>
-    </section>
-  </div>
-  </sc-if>
-
-  <!-- ================= CHAT ================= -->
-  <sc-if value="{{ isChat }}" hint-placeholder-val="{{ true }}">
-  <div style="background:#F8F8F8;">
-    <div style="max-width:880px;margin:0 auto;padding:24px 16px 40px;">
-      <div style="background:#fff;border:1px solid #DDD;border-radius:14px;padding:18px 22px;display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap;">
-        <span style="width:48px;height:48px;border-radius:50%;background:#165D91;display:flex;align-items:center;justify-content:center;flex:none;">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        </span>
-        <div style="flex:1;min-width:160px;">
-          <div style="font-size:19px;font-weight:700;color:#0D3D5E;">העוזר הדיגיטלי</div>
-          <div style="font-size:15px;color:#7A7A7A;">עונה על שאלות בנושא זכויות קטועי גפיים</div>
-        </div>
-      </div>
-
-      <div ref="{{ scrollRef }}" data-chat-log role="log" aria-live="polite" style="background:#fff;border:1px solid #DDD;border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:16px;min-height:280px;max-height:min(56vh,540px);overflow-y:auto;">
-        <sc-for list="{{ messageViews }}" as="m" hint-placeholder-count="2">
-          <div style="{{ m.rowStyle }}">
-            <div style="{{ m.bubbleStyle }}">{{ m.text }}</div>
-          </div>
-        </sc-for>
-        <sc-if value="{{ typing }}" hint-placeholder-val="{{ false }}">
-          <div style="display:flex;justify-content:flex-start;">
-            <div style="background:#F4F4F4;border-radius:14px 14px 14px 4px;padding:16px 20px;display:flex;gap:6px;align-items:center;">
-              <span style="width:9px;height:9px;border-radius:50%;background:#1E7FC3;animation:blink 1.2s infinite;"></span>
-              <span style="width:9px;height:9px;border-radius:50%;background:#1E7FC3;animation:blink 1.2s infinite .2s;"></span>
-              <span style="width:9px;height:9px;border-radius:50%;background:#1E7FC3;animation:blink 1.2s infinite .4s;"></span>
+            <nav data-desktop-nav style="display:flex;gap:6px;flex-wrap:wrap;">
+              <button onClick="{{ go.home }}" style="{{ navStyle.home }}">בית</button>
+              <button onClick="{{ go.chat }}" style="{{ navStyle.chat }}">העוזר הדיגיטלי</button>
+              <button onClick="{{ go.rights }}" style="{{ navStyle.rights }}">הזכויות שלי</button>
+            </nav>
+            <div data-hdr-auth style="margin-inline-start:auto;display:flex;gap:10px;flex-wrap:wrap;">
+              <button onClick="{{ go.login }}"
+                style="height:44px;padding:0 22px;border-radius:22px;border:1.5px solid rgba(255,255,255,.6);background:transparent;color:#fff;font-size:16px;font-weight:600;cursor:pointer;">התחברות</button>
+              <button onClick="{{ go.signup }}"
+                style="height:44px;padding:0 22px;border-radius:22px;border:none;background:#F06723;color:#fff;font-size:16px;font-weight:700;cursor:pointer;">הרשמה</button>
             </div>
           </div>
-        </sc-if>
-      </div>
-
-      <sc-if value="{{ showFullSuggestions }}" hint-placeholder-val="{{ true }}">
-      <div>
-        <div style="margin-top:20px;">
-          <div style="font-size:16px;font-weight:700;color:#555;margin-bottom:10px;">שאלות נפוצות:</div>
-          <div style="display:flex;flex-wrap:wrap;gap:10px;">
-            <sc-for list="{{ suggestions }}" as="s" hint-placeholder-count="4">
-              <button onClick="{{ s.onClick }}" style="background:#fff;border:1.5px solid #D6E3EF;color:#165D91;font-size:16px;font-weight:600;padding:11px 18px;border-radius:22px;cursor:pointer;text-align:right;" style-hover="background:#EDF5FB;border-color:#1E7FC3;color:#165D91;text-align:right;">{{ s.text }}</button>
-            </sc-for>
-          </div>
-        </div>
-        <div style="margin-top:18px;">
-          <div style="font-size:16px;font-weight:700;color:#555;margin-bottom:10px;">או לפי סוג הקטיעה:</div>
-          <div style="display:flex;flex-wrap:wrap;gap:10px;">
-            <sc-for list="{{ catChips }}" as="c" hint-placeholder-count="4">
-              <button onClick="{{ c.onClick }}" style="background:#FDEBD9;border:1.5px solid #F6C9A6;color:#C2511A;font-size:16px;font-weight:600;padding:11px 18px;border-radius:22px;cursor:pointer;text-align:right;" style-hover="background:#FBE0CB;border-color:#F06723;color:#C2511A;text-align:right;">{{ c.title }}</button>
-            </sc-for>
-          </div>
-        </div>
-      </div>
-      </sc-if>
-      <sc-if value="{{ showCompactSuggestions }}" hint-placeholder-val="{{ false }}">
-      <div style="margin-top:18px;">
-        <div style="font-size:15px;font-weight:700;color:#7A7A7A;margin-bottom:10px;">שאלות נוספות:</div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;">
-          <sc-for list="{{ suggestions }}" as="s" hint-placeholder-count="3">
-            <button onClick="{{ s.onClick }}" style="background:#fff;border:1.5px solid #D6E3EF;color:#165D91;font-size:15px;font-weight:600;padding:9px 14px;border-radius:20px;cursor:pointer;text-align:right;" style-hover="background:#EDF5FB;border-color:#1E7FC3;color:#165D91;text-align:right;">{{ s.text }}</button>
-          </sc-for>
-        </div>
-      </div>
+          <div style="height:3px;background:#F06723;"></div>
+        </header>
       </sc-if>
 
-      <form data-chat-input onSubmit="{{ onChatSubmit }}" style="position:sticky;bottom:16px;margin-top:22px;display:flex;gap:10px;background:#fff;border:1.5px solid #D6E3EF;border-radius:18px;padding:9px;box-shadow:0 8px 26px rgba(13,61,94,.12);flex-wrap:nowrap;">
-        <input value="{{ chatInput }}" onChange="{{ onChatInput }}" aria-label="כתיבת שאלה לעוזר הדיגיטלי" placeholder="כתוב/כתבי את השאלה שלך כאן…" style="flex:1 1 0;min-width:0;border:none;height:50px;padding:0 14px;font-size:18px;color:#333;background:none;outline:none;"/>
-        <button type="submit" data-send-btn style="flex:none;height:50px;padding:0 24px;border:none;border-radius:25px;background:#1E7FC3;color:#fff;font-size:17px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
-          <svg data-send-icon width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="20" y1="4" x2="9.5" y2="14.5"/><polygon points="20 4 13.5 20 9.5 14.5 4 10.5 20 4"/></svg>
-          שליחה
-        </button>
-      </form>
+      <main style="flex:1 0 auto;">
 
-      <div style="margin-top:16px;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:center;background:#EDF5FB;border-radius:12px;padding:14px 18px;">
-        <span style="font-size:16px;color:#165D91;font-weight:600;">מעדיף/ה לדבר עם אדם מהצוות?</span>
-        <a href="tel:030000000" style="font-size:16px;color:#165D91;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#165D91" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.4 2.1L8 11.5a16 16 0 0 0 6 6l1.1-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2Z"/></svg>
-          התקשרו: 03-0000000
-        </a>
-      </div>
-
-      <sc-if value="{{ showDisclaimer }}" hint-placeholder-val="{{ true }}">
-        <p style="font-size:14px;color:#7A7A7A;text-align:center;margin:14px 0 0;line-height:1.5;">זהו אזור הדגמה. בגרסה המלאה העוזר מבוסס על מאגר הזכויות המעודכן ואינו מהווה ייעוץ משפטי.</p>
-      </sc-if>
-    </div>
-  </div>
-  </sc-if>
-
-  <!-- ================= RIGHTS BROWSER ================= -->
-  <sc-if value="{{ isRights }}" hint-placeholder-val="{{ false }}">
-  <div data-page style="max-width:1200px;margin:0 auto;padding:48px 24px;">
-    <h1 style="font-size:clamp(26px,3vw,34px);color:#0D3D5E;font-weight:800;margin:0 0 8px;">הזכויות שלי</h1>
-    <p style="font-size:18px;color:#555;margin:0 0 36px;max-width:680px;line-height:1.5;">כל הזכויות מסודרות לפי נושא ולפי סוג הקטיעה. בחר/י כרטיס כדי לקרוא בפירוט.</p>
-
-    <h2 style="font-size:22px;color:#165D91;font-weight:700;margin:0 0 18px;">נושאים מרכזיים</h2>
-    <div data-grid style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-bottom:44px;">
-      <sc-for list="{{ quickCards }}" as="t" hint-placeholder-count="3">
-        <button data-card onClick="{{ t.onClick }}" style="text-align:right;background:#fff;border:1px solid #DDD;border-radius:12px;padding:24px;cursor:pointer;display:flex;flex-direction:column;gap:12px;transition:box-shadow .15s,transform .15s,border-color .15s;" style-hover="border-color:#1E7FC3;box-shadow:0 10px 26px rgba(13,61,94,.12);transform:translateY(-3px);background:#fff;text-align:right;">
-          <span style="align-self:flex-start;background:#EDF5FB;color:#165D91;font-size:14px;font-weight:600;padding:5px 12px;border-radius:16px;">{{ t.tag }}</span>
-          <span style="font-size:20px;font-weight:700;color:#0D3D5E;">{{ t.title }}</span>
-          <span style="font-size:16px;color:#555;line-height:1.5;">{{ t.lead }}</span>
-          <span style="font-size:16px;font-weight:700;color:#1E7FC3;margin-top:2px;">לפרטים ‹</span>
-        </button>
-      </sc-for>
-    </div>
-
-    <h2 style="font-size:22px;color:#165D91;font-weight:700;margin:0 0 18px;">לפי סוג הקטיעה</h2>
-    <div data-grid style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;">
-      <sc-for list="{{ causeCards }}" as="t" hint-placeholder-count="4">
-        <button data-card onClick="{{ t.onClick }}" style="text-align:right;background:#fff;border:1px solid #DDD;border-radius:12px;padding:24px;cursor:pointer;display:flex;flex-direction:column;gap:12px;transition:box-shadow .15s,transform .15s,border-color .15s;" style-hover="border-color:#1E7FC3;box-shadow:0 10px 26px rgba(13,61,94,.12);transform:translateY(-3px);background:#fff;text-align:right;">
-          <span style="align-self:flex-start;background:#EDF5FB;color:#165D91;font-size:14px;font-weight:600;padding:5px 12px;border-radius:16px;">{{ t.tag }}</span>
-          <span style="font-size:20px;font-weight:700;color:#0D3D5E;line-height:1.3;">{{ t.title }}</span>
-          <span style="font-size:16px;color:#555;">גורם מטפל: {{ t.body }}</span>
-          <span style="font-size:16px;font-weight:700;color:#1E7FC3;margin-top:2px;">לפרטים ‹</span>
-        </button>
-      </sc-for>
-    </div>
-  </div>
-  </sc-if>
-
-  <!-- ================= DETAIL ================= -->
-  <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
-  <div data-page style="max-width:820px;margin:0 auto;padding:32px 24px 56px;">
-    <button onClick="{{ backFromDetail }}" style="background:none;border:none;color:#165D91;font-size:16px;font-weight:600;cursor:pointer;padding:0;margin-bottom:22px;display:inline-flex;align-items:center;gap:6px;">› {{ detailBackLabel }}</button>
-    <div style="background:#EDF5FB;border-radius:16px;padding:30px 28px;margin-bottom:28px;">
-      <span style="display:inline-block;background:#fff;color:#165D91;font-size:14px;font-weight:600;padding:5px 12px;border-radius:16px;margin-bottom:14px;">{{ topic.tag }}</span>
-      <h1 style="font-size:clamp(24px,3vw,32px);color:#0D3D5E;font-weight:800;margin:0 0 12px;line-height:1.25;">{{ topic.title }}</h1>
-      <p style="font-size:18px;color:#333;line-height:1.6;margin:0 0 18px;">{{ topic.lead }}</p>
-      <div style="display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid #D6E3EF;border-radius:12px;padding:12px 16px;">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2E8B3F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
-        <span style="font-size:16px;color:#333;"><strong style="color:#0D3D5E;">גורם מטפל:</strong> {{ topic.body }}</span>
-      </div>
-    </div>
-
-    <div style="display:flex;flex-direction:column;gap:22px;">
-      <sc-for list="{{ topic.sections }}" as="sec" hint-placeholder-count="3">
-        <div style="background:#fff;border:1px solid #DDD;border-radius:12px;padding:24px;">
-          <h2 style="font-size:21px;color:#165D91;font-weight:700;margin:0 0 16px;">{{ sec.h }}</h2>
-          <div style="display:flex;flex-direction:column;gap:12px;">
-            <sc-for list="{{ sec.items }}" as="it" hint-placeholder-count="3">
-              <div style="display:flex;gap:12px;align-items:flex-start;">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E7FC3" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:2px;"><polyline points="20 6 9 17 4 12"/></svg>
-                <span style="font-size:17px;color:#333;line-height:1.55;">{{ it }}</span>
+        <!-- ================= HOME ================= -->
+        <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+          <div>
+            <sc-if value="{{ showResume }}" hint-placeholder-val="{{ false }}">
+              <div style="background:#FDEBD9;border-bottom:1px solid #F6C9A6;">
+                <div
+                  style="max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C2511A" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="flex:none;">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M12 8v4l2.5 2" />
+                  </svg>
+                  <span
+                    style="font-size:16px;color:#C2511A;font-weight:600;flex:1;min-width:200px;line-height:1.45;">טרם
+                    השלמת את ההתאמה האישית - נשלים כמה פרטים כדי להתאים לך את הזכויות והגורם המטפל.</span>
+                  <button onClick="{{ resumeWizard }}"
+                    style="height:42px;padding:0 20px;border:none;border-radius:21px;background:#F06723;color:#fff;font-size:15px;font-weight:700;cursor:pointer;flex:none;">להמשך
+                    ההתאמה</button>
+                </div>
               </div>
-            </sc-for>
+            </sc-if>
+            <sc-if value="{{ showProfileStrip }}" hint-placeholder-val="{{ false }}">
+              <div style="background:#EDF5FB;border-bottom:1px solid #D6E3EF;">
+                <div
+                  style="max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2E8B3F" stroke-width="2.2"
+                    stroke-linecap="round" stroke-linejoin="round" style="flex:none;">
+                    <path d="M9 12l2 2 4-4" />
+                    <circle cx="12" cy="12" r="9" />
+                  </svg>
+                  <span
+                    style="font-size:16px;color:#165D91;font-weight:600;flex:1;min-width:200px;line-height:1.45;">ההתאמה
+                    הושלמה · הגורם המטפל שלך: <strong style="color:#0D3D5E;">{{ profileAuthName }}</strong></span>
+                  <button onClick="{{ resumeWizard }}"
+                    style="background:none;border:none;color:#165D91;font-size:15px;font-weight:700;cursor:pointer;padding:8px 2px;flex:none;">עדכון
+                    פרטים ›</button>
+                </div>
+              </div>
+            </sc-if>
+            <section style="background:#EDF5FB;">
+              <div data-hero style="max-width:880px;margin:0 auto;padding:72px 24px 64px;text-align:center;">
+                <div
+                  style="display:inline-block;background:#FDEBD9;color:#C2511A;font-size:15px;font-weight:700;padding:7px 16px;border-radius:20px;margin-bottom:20px;">
+                  הבית של קטועי הגפיים בישראל</div>
+                <h1
+                  style="font-size:clamp(28px,4.4vw,42px);line-height:1.18;color:#0D3D5E;font-weight:800;margin:0 auto 18px;max-width:720px;text-wrap:balance;">
+                  כל הזכויות שלך, במקום אחד וברור</h1>
+                <p
+                  style="font-size:clamp(17px,2.2vw,21px);color:#333;line-height:1.55;margin:0 auto 32px;max-width:640px;">
+                  אנחנו כאן כדי לעזור לך להבין מה מגיע לך ואיך לממש את זה - בלי בירוקרטיה מסובכת. שאל/י כל שאלה, והעוזר
+                  הדיגיטלי יסביר בשפה פשוטה.</p>
+                <form onSubmit="{{ onHomeSubmit }}"
+                  style="display:flex;gap:10px;max-width:660px;margin:0 auto;background:#fff;border:1.5px solid #D6E3EF;border-radius:18px;padding:9px;box-shadow:0 8px 26px rgba(13,61,94,.10);flex-wrap:nowrap;">
+                  <input value="{{ homeQuery }}" onChange="{{ onHomeInput }}" aria-label="כתיבת שאלה לעוזר הדיגיטלי"
+                    placeholder="לדוגמה: איך מגישים בקשה לפרוטזה?"
+                    style="flex:1 1 0;min-width:0;border:none;height:50px;padding:0 14px;font-size:18px;color:#333;background:none;outline:none;" />
+                  <button type="submit" data-send-btn
+                    style="flex:none;height:50px;padding:0 24px;border:none;border-radius:25px;background:#1E7FC3;color:#fff;font-size:17px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
+                    <svg data-send-icon width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff"
+                      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="20" y1="4" x2="9.5" y2="14.5" />
+                      <polygon points="20 4 13.5 20 9.5 14.5 4 10.5 20 4" />
+                    </svg>
+                    שליחה
+                  </button>
+                </form>
+                <p style="font-size:15px;color:#7A7A7A;margin:14px 0 0;">אפשר גם לבחור נושא מהרשימה למטה</p>
+              </div>
+            </section>
+
+            <section data-sec style="max-width:1200px;margin:0 auto;padding:56px 24px 24px;">
+              <h2 style="font-size:clamp(22px,2.6vw,28px);color:#0D3D5E;font-weight:700;margin:0 0 6px;">במה אפשר לעזור?
+              </h2>
+              <p style="font-size:18px;color:#555;margin:0 0 28px;">קיצורי דרך לזכויות הנפוצות ביותר.</p>
+              <div data-grid style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;">
+                <button data-card onClick="{{ open.medrights }}"
+                  style="text-align:right;background:#fff;border:1px solid #DDD;border-radius:12px;padding:26px 24px;cursor:pointer;display:flex;flex-direction:column;gap:14px;transition:box-shadow .15s,transform .15s,border-color .15s;"
+                  style-hover="border-color:#1E7FC3;box-shadow:0 10px 26px rgba(13,61,94,.12);transform:translateY(-3px);background:#fff;text-align:right;">
+                  <span data-card-icon
+                    style="width:56px;height:56px;border-radius:14px;background:#D6EAFA;display:flex;align-items:center;justify-content:center;">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#165D91" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <path
+                        d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.5 4.04 3 5.5l7 7Z" />
+                    </svg>
+                  </span>
+                  <span style="font-size:21px;font-weight:700;color:#0D3D5E;">זכויות רפואיות</span>
+                  <span style="font-size:16px;color:#555;line-height:1.5;">פרוטזות, מכשירי שיקום, טיפולים והחזרים
+                    כספיים.</span>
+                  <span style="font-size:16px;font-weight:700;color:#1E7FC3;">לפרטים ‹</span>
+                </button>
+                <button data-card onClick="{{ open.financial }}"
+                  style="text-align:right;background:#fff;border:1px solid #DDD;border-radius:12px;padding:26px 24px;cursor:pointer;display:flex;flex-direction:column;gap:14px;transition:box-shadow .15s,transform .15s,border-color .15s;"
+                  style-hover="border-color:#1E7FC3;box-shadow:0 10px 26px rgba(13,61,94,.12);transform:translateY(-3px);background:#fff;text-align:right;">
+                  <span data-card-icon
+                    style="width:56px;height:56px;border-radius:14px;background:#FDEBD9;display:flex;align-items:center;justify-content:center;">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C2511A" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="2" y="5" width="20" height="14" rx="2" />
+                      <circle cx="12" cy="12" r="3" />
+                      <line x1="6" y1="12" x2="6.01" y2="12" />
+                      <line x1="18" y1="12" x2="18.01" y2="12" />
+                    </svg>
+                  </span>
+                  <span style="font-size:21px;font-weight:700;color:#0D3D5E;">זכויות כספיות</span>
+                  <span style="font-size:16px;color:#555;line-height:1.5;">קצבאות, מענקים, פטורים והנחות.</span>
+                  <span style="font-size:16px;font-weight:700;color:#1E7FC3;">לפרטים ‹</span>
+                </button>
+                <button data-card onClick="{{ open.mobility }}"
+                  style="text-align:right;background:#fff;border:1px solid #DDD;border-radius:12px;padding:26px 24px;cursor:pointer;display:flex;flex-direction:column;gap:14px;transition:box-shadow .15s,transform .15s,border-color .15s;"
+                  style-hover="border-color:#1E7FC3;box-shadow:0 10px 26px rgba(13,61,94,.12);transform:translateY(-3px);background:#fff;text-align:right;">
+                  <span data-card-icon
+                    style="width:56px;height:56px;border-radius:14px;background:#DFFAE3;display:flex;align-items:center;justify-content:center;">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2E8B3F" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="4.5" r="2" />
+                      <path d="M12 8v6l4 4" />
+                      <path d="M12 11l-4 1" />
+                      <path d="M8 21a5 5 0 0 1 4-8" />
+                    </svg>
+                  </span>
+                  <span style="font-size:21px;font-weight:700;color:#0D3D5E;">ניידות ונגישות</span>
+                  <span style="font-size:16px;color:#555;line-height:1.5;">תו נכה, רכב, נגישות והתאמות דיור.</span>
+                  <span style="font-size:16px;font-weight:700;color:#1E7FC3;">לפרטים ‹</span>
+                </button>
+              </div>
+            </section>
+
+            <section style="background:#F4F4F4;margin-top:32px;">
+              <div data-sec style="max-width:1200px;margin:0 auto;padding:56px 24px;">
+                <h2 style="font-size:clamp(22px,2.6vw,28px);color:#0D3D5E;font-weight:700;margin:0 0 6px;">הזכויות לפי
+                  סוג הקטיעה</h2>
+                <p style="font-size:18px;color:#555;margin:0 0 28px;max-width:680px;line-height:1.5;">הגורם המטפל
+                  והזכויות משתנים לפי הנסיבות שבהן אירעה הקטיעה. בחר/י את המצב שמתאים לך:</p>
+                <div data-grid style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;">
+                  <sc-for list="{{ causeCards }}" as="t" hint-placeholder-count="4">
+                    <button data-card onClick="{{ t.onClick }}"
+                      style="text-align:right;background:#fff;border:1px solid #DDD;border-radius:12px;padding:24px;cursor:pointer;display:flex;flex-direction:column;gap:12px;transition:box-shadow .15s,transform .15s,border-color .15s;"
+                      style-hover="border-color:#1E7FC3;box-shadow:0 10px 26px rgba(13,61,94,.12);transform:translateY(-3px);background:#fff;text-align:right;">
+                      <span
+                        style="align-self:flex-start;background:#EDF5FB;color:#165D91;font-size:14px;font-weight:600;padding:5px 12px;border-radius:16px;">{{
+                        t.tag }}</span>
+                      <span style="font-size:20px;font-weight:700;color:#0D3D5E;line-height:1.3;">{{ t.title }}</span>
+                      <span style="font-size:16px;color:#555;">גורם מטפל: {{ t.body }}</span>
+                      <span style="font-size:16px;font-weight:700;color:#1E7FC3;margin-top:2px;">לפרטים ‹</span>
+                    </button>
+                  </sc-for>
+                </div>
+              </div>
+            </section>
+
+            <section style="background:#165D91;">
+              <div data-cta-band style="max-width:760px;margin:0 auto;padding:60px 24px;text-align:center;">
+                <h2 style="font-size:clamp(22px,2.8vw,30px);color:#fff;font-weight:700;margin:0 0 14px;">לא בטוח/ה מאיפה
+                  להתחיל?</h2>
+                <p style="font-size:19px;color:rgba(255,255,255,.9);line-height:1.55;margin:0 0 28px;">שאל/י את העוזר
+                  הדיגיטלי - הוא יכוון אותך לזכויות שמתאימות בדיוק למצב שלך.</p>
+                <button onClick="{{ go.chat }}"
+                  style="height:56px;padding:0 38px;border:none;border-radius:28px;background:#F06723;color:#fff;font-size:18px;font-weight:700;cursor:pointer;">פתיחת
+                  העוזר הדיגיטלי</button>
+              </div>
+            </section>
           </div>
-        </div>
-      </sc-for>
-    </div>
-
-    <div style="background:#165D91;border-radius:16px;padding:28px;margin-top:28px;text-align:center;">
-      <p style="font-size:18px;color:#fff;font-weight:600;margin:0 0 18px;line-height:1.5;">יש לך שאלה ספציפית על {{ topic.title }}?</p>
-      <button onClick="{{ askTopic }}" style="height:54px;padding:0 32px;border:none;border-radius:27px;background:#F06723;color:#fff;font-size:17px;font-weight:700;cursor:pointer;">שאל/י את העוזר הדיגיטלי</button>
-    </div>
-  </div>
-  </sc-if>
-
-  <!-- ================= LOGIN ================= -->
-  <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
-  <div style="min-height:100vh;background:#F4F4F4;padding:28px 20px 48px;display:flex;flex-direction:column;align-items:center;">
-    <div style="width:100%;max-width:440px;margin-bottom:6px;">
-      <button onClick="{{ go.home }}" style="background:none;border:none;color:#165D91;font-size:16px;font-weight:600;cursor:pointer;padding:8px 0;display:inline-flex;align-items:center;gap:4px;">‹ חזרה לאתר</button>
-    </div>
-    <button onClick="{{ go.home }}" aria-label="הצעד הבא — לדף הבית" style="background:none;border:none;cursor:pointer;margin:6px 0 24px;">
-      <img src="assets/logo.png" alt="הצעד הבא" style="height:52px;width:auto;display:block;"/>
-    </button>
-    <div style="width:100%;max-width:440px;background:#fff;border:1px solid #DDD;border-radius:16px;padding:34px 30px;box-shadow:0 10px 30px rgba(13,61,94,.08);">
-      <h1 style="font-size:28px;color:#0D3D5E;font-weight:800;margin:0 0 6px;text-align:center;">ברוך/ה שובך</h1>
-      <p style="font-size:17px;color:#555;margin:0 0 26px;text-align:center;">התחבר/י כדי להמשיך לזכויות שלך.</p>
-
-      <label style="display:block;margin-bottom:18px;">
-        <span style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">אימייל</span>
-        <input type="email" dir="ltr" value="{{ F.loginEmail.value }}" onChange="{{ F.loginEmail.onChange }}" placeholder="name@email.com" style="{{ F.loginEmail.style }}" style-focus="border-color:#1E7FC3;background:#EDF5FB;"/>
-        <sc-if value="{{ F.loginEmail.bad }}" hint-placeholder-val="{{ false }}">
-          <div style="display:flex;align-items:center;gap:6px;margin-top:7px;color:#C0392B;font-size:14px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16.5" x2="12.01" y2="16.5"/></svg><span>{{ F.loginEmail.err }}</span></div>
         </sc-if>
-      </label>
-      <label style="display:block;margin-bottom:10px;">
-        <span style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">סיסמה</span>
-        <div style="position:relative;">
-          <input type="{{ loginPwType }}" value="{{ F.loginPw.value }}" onChange="{{ F.loginPw.onChange }}" placeholder="הקלד/י סיסמה" style="{{ F.loginPw.style }}" style-focus="border-color:#1E7FC3;background:#EDF5FB;"/>
-          <button type="button" onClick="{{ toggleLoginPw }}" aria-label="הצגה או הסתרה של הסיסמה" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);width:40px;height:40px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#7A7A7A;">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-        <sc-if value="{{ F.loginPw.bad }}" hint-placeholder-val="{{ false }}">
-          <div style="display:flex;align-items:center;gap:6px;margin-top:7px;color:#C0392B;font-size:14px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16.5" x2="12.01" y2="16.5"/></svg><span>{{ F.loginPw.err }}</span></div>
-        </sc-if>
-      </label>
-      <div style="text-align:left;margin-bottom:22px;"><a href="#" style="font-size:15px;color:#165D91;font-weight:600;text-decoration:none;">שכחת סיסמה?</a></div>
 
-      <button onClick="{{ loginSubmit }}" disabled="{{ busy }}" style="{{ pbtnStyle }}">{{ loginLabel }}</button>
+        <!-- ================= CHAT ================= -->
+        <sc-if value="{{ isChat }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#F8F8F8;">
+            <div style="max-width:880px;margin:0 auto;padding:24px 16px 40px;">
+              <div
+                style="background:#fff;border:1px solid #DDD;border-radius:14px;padding:18px 22px;display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap;">
+                <span
+                  style="width:48px;height:48px;border-radius:50%;background:#165D91;display:flex;align-items:center;justify-content:center;flex:none;">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                  </svg>
+                </span>
+                <div style="flex:1;min-width:160px;">
+                  <div style="font-size:19px;font-weight:700;color:#0D3D5E;">העוזר הדיגיטלי</div>
+                  <div style="font-size:15px;color:#7A7A7A;">עונה על שאלות בנושא זכויות קטועי גפיים</div>
+                </div>
+              </div>
 
-      <div style="display:flex;align-items:center;gap:14px;margin:24px 0;">
-        <span style="flex:1;height:1px;background:#DDD;"></span>
-        <span style="font-size:15px;color:#7A7A7A;">או</span>
-        <span style="flex:1;height:1px;background:#DDD;"></span>
-      </div>
-
-      <button onClick="{{ login.google }}" style="width:100%;height:56px;border:1.5px solid #DDD;border-radius:28px;background:#fff;color:#333;font-size:17px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px;" style-hover="background:#F8F8F8;width:100%;">
-        <svg width="22" height="22" viewBox="0 0 48 48"><path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/><path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.69 28.18c-.44-1.32-.69-2.73-.69-4.18s.25-2.86.69-4.18v-5.7H4.34A21.99 21.99 0 0 0 2 24c0 3.55.85 6.91 2.34 9.88l7.35-5.7z"/><path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/></svg>
-        המשך עם Google
-      </button>
-      <button onClick="{{ login.apple }}" style="width:100%;height:56px;border:1.5px solid #DDD;border-radius:28px;background:#fff;color:#333;font-size:17px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px;" style-hover="background:#F8F8F8;width:100%;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="#000"><path d="M16.36 12.93c-.02-2.27 1.85-3.36 1.94-3.41-1.06-1.55-2.71-1.76-3.29-1.78-1.4-.14-2.73.82-3.44.82-.71 0-1.8-.8-2.96-.78-1.52.02-2.93.88-3.71 2.24-1.58 2.74-.4 6.79 1.13 9.01.75 1.09 1.64 2.31 2.81 2.27 1.13-.05 1.55-.73 2.92-.73 1.36 0 1.75.73 2.95.71 1.22-.02 1.99-1.11 2.74-2.21.86-1.27 1.22-2.5 1.24-2.56-.03-.01-2.38-.91-2.4-3.61zM14.13 6.16c.62-.76 1.04-1.8.93-2.85-.9.04-1.99.6-2.63 1.35-.57.67-1.08 1.74-.94 2.76 1 .08 2.02-.51 2.64-1.26z"/></svg>
-        המשך עם Apple
-      </button>
-
-      <p style="text-align:center;font-size:16px;color:#555;margin:26px 0 0;">אין לך עדיין חשבון? <button onClick="{{ go.signup }}" style="background:none;border:none;color:#165D91;font-size:16px;font-weight:700;cursor:pointer;padding:0;">להרשמה ›</button></p>
-    </div>
-  </div>
-  </sc-if>
-
-  <!-- ================= SIGNUP ================= -->
-  <sc-if value="{{ isSignup }}" hint-placeholder-val="{{ false }}">
-  <div style="min-height:100vh;background:#F4F4F4;padding:28px 20px 48px;display:flex;flex-direction:column;align-items:center;">
-    <div style="width:100%;max-width:520px;margin-bottom:6px;">
-      <button onClick="{{ go.home }}" style="background:none;border:none;color:#165D91;font-size:16px;font-weight:600;cursor:pointer;padding:8px 0;display:inline-flex;align-items:center;gap:4px;">‹ חזרה לאתר</button>
-    </div>
-    <button onClick="{{ go.home }}" aria-label="הצעד הבא — לדף הבית" style="background:none;border:none;cursor:pointer;margin:6px 0 24px;">
-      <img src="assets/logo.png" alt="הצעד הבא" style="height:52px;width:auto;display:block;"/>
-    </button>
-
-    <sc-if value="{{ isSignupForm }}" hint-placeholder-val="{{ true }}">
-    <div style="width:100%;max-width:520px;background:#fff;border:1px solid #DDD;border-radius:16px;padding:34px 30px;box-shadow:0 10px 30px rgba(13,61,94,.08);">
-      <h1 style="font-size:28px;color:#0D3D5E;font-weight:800;margin:0 0 6px;text-align:center;">יצירת חשבון חדש</h1>
-      <p style="font-size:17px;color:#555;margin:0 0 24px;text-align:center;">כמה פרטים כדי שנוכל להתאים לך את הזכויות הנכונות.</p>
-
-      <button onClick="{{ signup.google }}" style="width:100%;height:56px;border:1.5px solid #DDD;border-radius:28px;background:#fff;color:#333;font-size:17px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px;" style-hover="background:#F8F8F8;width:100%;">
-        <svg width="22" height="22" viewBox="0 0 48 48"><path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/><path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.69 28.18c-.44-1.32-.69-2.73-.69-4.18s.25-2.86.69-4.18v-5.7H4.34A21.99 21.99 0 0 0 2 24c0 3.55.85 6.91 2.34 9.88l7.35-5.7z"/><path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/></svg>
-        הרשמה מהירה עם Google
-      </button>
-      <button onClick="{{ signup.apple }}" style="width:100%;height:56px;border:1.5px solid #DDD;border-radius:28px;background:#fff;color:#333;font-size:17px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px;" style-hover="background:#F8F8F8;width:100%;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="#000"><path d="M16.36 12.93c-.02-2.27 1.85-3.36 1.94-3.41-1.06-1.55-2.71-1.76-3.29-1.78-1.4-.14-2.73.82-3.44.82-.71 0-1.8-.8-2.96-.78-1.52.02-2.93.88-3.71 2.24-1.58 2.74-.4 6.79 1.13 9.01.75 1.09 1.64 2.31 2.81 2.27 1.13-.05 1.55-.73 2.92-.73 1.36 0 1.75.73 2.95.71 1.22-.02 1.99-1.11 2.74-2.21.86-1.27 1.22-2.5 1.24-2.56-.03-.01-2.38-.91-2.4-3.61zM14.13 6.16c.62-.76 1.04-1.8.93-2.85-.9.04-1.99.6-2.63 1.35-.57.67-1.08 1.74-.94 2.76 1 .08 2.02-.51 2.64-1.26z"/></svg>
-        הרשמה מהירה עם Apple
-      </button>
-
-      <div style="display:flex;align-items:center;gap:14px;margin:24px 0;">
-        <span style="flex:1;height:1px;background:#DDD;"></span>
-        <span style="font-size:15px;color:#7A7A7A;">או הרשמה עם אימייל</span>
-        <span style="flex:1;height:1px;background:#DDD;"></span>
-      </div>
-
-      <div style="display:flex;flex-direction:column;gap:18px;">
-        <label style="display:block;">
-          <span style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">שם מלא</span>
-          <input type="text" value="{{ F.suName.value }}" onChange="{{ F.suName.onChange }}" placeholder="ישראל ישראלי" style="{{ F.suName.style }}" style-focus="border-color:#1E7FC3;background:#EDF5FB;"/>
-          <sc-if value="{{ F.suName.bad }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:6px;margin-top:7px;color:#C0392B;font-size:14px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16.5" x2="12.01" y2="16.5"/></svg><span>{{ F.suName.err }}</span></div></sc-if>
-        </label>
-        <label style="display:block;">
-          <span style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">אימייל</span>
-          <input type="email" dir="ltr" value="{{ F.suEmail.value }}" onChange="{{ F.suEmail.onChange }}" placeholder="name@email.com" style="{{ F.suEmail.style }}" style-focus="border-color:#1E7FC3;background:#EDF5FB;"/>
-          <sc-if value="{{ F.suEmail.bad }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:6px;margin-top:7px;color:#C0392B;font-size:14px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16.5" x2="12.01" y2="16.5"/></svg><span>{{ F.suEmail.err }}</span></div></sc-if>
-        </label>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;">
-          <label style="display:block;">
-            <span style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">טלפון</span>
-            <input type="tel" dir="ltr" value="{{ F.suPhone.value }}" onChange="{{ F.suPhone.onChange }}" placeholder="050-0000000" style="{{ F.suPhone.style }}" style-focus="border-color:#1E7FC3;background:#EDF5FB;"/>
-            <sc-if value="{{ F.suPhone.bad }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:6px;margin-top:7px;color:#C0392B;font-size:14px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16.5" x2="12.01" y2="16.5"/></svg><span>{{ F.suPhone.err }}</span></div></sc-if>
-          </label>
-          <label style="display:block;">
-            <span style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">גיל</span>
-            <input type="number" dir="ltr" value="{{ F.suAge.value }}" onChange="{{ F.suAge.onChange }}" placeholder="35" style="{{ F.suAge.style }}" style-focus="border-color:#1E7FC3;background:#EDF5FB;"/>
-            <sc-if value="{{ F.suAge.bad }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:6px;margin-top:7px;color:#C0392B;font-size:14px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16.5" x2="12.01" y2="16.5"/></svg><span>{{ F.suAge.err }}</span></div></sc-if>
-          </label>
-        </div>
-        <label style="display:block;">
-          <span style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">סוג הקטיעה</span>
-          <select value="{{ F.suType.value }}" onChange="{{ F.suType.onChange }}" style="{{ F.suType.style }}" style-focus="border-color:#1E7FC3;background:#EDF5FB;">
-            <option value="">בחר/י מהרשימה…</option>
-            <sc-for list="{{ amputationTypes }}" as="opt" hint-placeholder-count="5"><option value="{{ opt }}">{{ opt }}</option></sc-for>
-          </select>
-          <sc-if value="{{ F.suType.bad }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:6px;margin-top:7px;color:#C0392B;font-size:14px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16.5" x2="12.01" y2="16.5"/></svg><span>{{ F.suType.err }}</span></div></sc-if>
-        </label>
-        <label style="display:block;">
-          <span style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">סיסמה</span>
-          <div style="position:relative;">
-            <input type="{{ suPwType }}" value="{{ F.suPw.value }}" onChange="{{ F.suPw.onChange }}" placeholder="בחר/י סיסמה (לפחות 6 תווים)" style="{{ F.suPw.style }}" style-focus="border-color:#1E7FC3;background:#EDF5FB;"/>
-            <button type="button" onClick="{{ toggleSuPw }}" aria-label="הצגה או הסתרה של הסיסמה" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);width:40px;height:40px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#7A7A7A;">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-          </div>
-          <sc-if value="{{ F.suPw.bad }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:6px;margin-top:7px;color:#C0392B;font-size:14px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16.5" x2="12.01" y2="16.5"/></svg><span>{{ F.suPw.err }}</span></div></sc-if>
-        </label>
-      </div>
-
-      <button onClick="{{ signupSubmit }}" disabled="{{ busy }}" style="{{ pbtnStyle }};margin-top:24px;">{{ signupLabel }}</button>
-      <p style="text-align:center;font-size:16px;color:#555;margin:22px 0 0;">כבר יש לך חשבון? <button onClick="{{ go.login }}" style="background:none;border:none;color:#165D91;font-size:16px;font-weight:700;cursor:pointer;padding:0;">להתחברות ›</button></p>
-    </div>
-    </sc-if>
-
-    <sc-if value="{{ isSignupComplete }}" hint-placeholder-val="{{ false }}">
-    <div style="width:100%;max-width:520px;background:#fff;border:1px solid #DDD;border-radius:16px;padding:34px 30px;box-shadow:0 10px 30px rgba(13,61,94,.08);">
-      <div style="display:flex;align-items:center;gap:12px;background:#DFFAE3;border-radius:12px;padding:14px 16px;margin-bottom:24px;">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2E8B3F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
-        <span style="font-size:16px;color:#2E8B3F;font-weight:600;">התחברת באמצעות Google בהצלחה</span>
-      </div>
-      <h1 style="font-size:26px;color:#0D3D5E;font-weight:800;margin:0 0 6px;">כמעט סיימנו!</h1>
-      <p style="font-size:17px;color:#555;margin:0 0 24px;line-height:1.5;">נשלים כמה פרטים כדי שנוכל להתאים לך את הזכויות. הפרטים מ‑Google כבר מולאו עבורך.</p>
-
-      <div style="display:flex;flex-direction:column;gap:18px;">
-        <label style="display:block;">
-          <span style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">שם מלא</span>
-          <input type="text" value="ישראל ישראלי" readonly style="width:100%;height:56px;border:1.5px solid #DDD;border-radius:8px;padding:0 16px;font-size:17px;color:#7A7A7A;background:#F4F4F4;outline:none;"/>
-        </label>
-        <label style="display:block;">
-          <span style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">אימייל</span>
-          <input type="email" dir="ltr" value="israel@gmail.com" readonly style="width:100%;height:56px;border:1.5px solid #DDD;border-radius:8px;padding:0 16px;font-size:17px;color:#7A7A7A;background:#F4F4F4;outline:none;text-align:left;"/>
-        </label>
-        <div style="height:1px;background:#EEE;margin:2px 0;"></div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;">
-          <label style="display:block;">
-            <span style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">טלפון <span style="color:#C0392B;">*</span></span>
-            <input type="tel" dir="ltr" value="{{ F.scPhone.value }}" onChange="{{ F.scPhone.onChange }}" placeholder="050-0000000" style="{{ F.scPhone.style }}" style-focus="border-color:#1E7FC3;background:#EDF5FB;"/>
-            <sc-if value="{{ F.scPhone.bad }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:6px;margin-top:7px;color:#C0392B;font-size:14px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16.5" x2="12.01" y2="16.5"/></svg><span>{{ F.scPhone.err }}</span></div></sc-if>
-          </label>
-          <label style="display:block;">
-            <span style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">גיל <span style="color:#C0392B;">*</span></span>
-            <input type="number" dir="ltr" value="{{ F.scAge.value }}" onChange="{{ F.scAge.onChange }}" placeholder="35" style="{{ F.scAge.style }}" style-focus="border-color:#1E7FC3;background:#EDF5FB;"/>
-            <sc-if value="{{ F.scAge.bad }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:6px;margin-top:7px;color:#C0392B;font-size:14px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16.5" x2="12.01" y2="16.5"/></svg><span>{{ F.scAge.err }}</span></div></sc-if>
-          </label>
-        </div>
-        <label style="display:block;">
-          <span style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">סוג הקטיעה <span style="color:#C0392B;">*</span></span>
-          <select value="{{ F.scType.value }}" onChange="{{ F.scType.onChange }}" style="{{ F.scType.style }}" style-focus="border-color:#1E7FC3;background:#EDF5FB;">
-            <option value="">בחר/י מהרשימה…</option>
-            <sc-for list="{{ amputationTypes }}" as="opt" hint-placeholder-count="5"><option value="{{ opt }}">{{ opt }}</option></sc-for>
-          </select>
-          <sc-if value="{{ F.scType.bad }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:6px;margin-top:7px;color:#C0392B;font-size:14px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16.5" x2="12.01" y2="16.5"/></svg><span>{{ F.scType.err }}</span></div></sc-if>
-        </label>
-      </div>
-
-      <button onClick="{{ completeSubmit }}" disabled="{{ busy }}" style="{{ pbtnStyle }};margin-top:24px;">{{ completeLabel }}</button>
-      <button onClick="{{ signup.back }}" style="width:100%;height:48px;border:none;background:none;color:#7A7A7A;font-size:16px;font-weight:600;cursor:pointer;margin-top:8px;">חזרה</button>
-    </div>
-    </sc-if>
-  </div>
-  </sc-if>
-
-  </main>
-
-  <sc-if value="{{ showFooter }}" hint-placeholder-val="{{ true }}">
-  <footer style="background:#3F444B;color:rgba(255,255,255,.82);flex:none;">
-    <div style="max-width:1200px;margin:0 auto;padding:44px 24px 28px;display:flex;flex-wrap:wrap;gap:36px;justify-content:space-between;">
-      <div style="max-width:300px;">
-        <img src="assets/logo.png" alt="הצעד הבא" style="height:46px;width:auto;background:#fff;border-radius:8px;padding:6px 10px;margin-bottom:14px;display:block;"/>
-        <p style="font-size:16px;line-height:1.6;margin:0;color:rgba(255,255,255,.78);">הבית של קטועי הגפיים בישראל — כדי שכל אחד יוכל להבין את הזכויות שלו ולממש אותן בקלות.</p>
-      </div>
-      <div style="display:flex;flex-wrap:wrap;gap:48px;">
-        <div>
-          <div style="font-size:17px;font-weight:700;color:#fff;margin-bottom:12px;">ניווט</div>
-          <div style="display:flex;flex-direction:column;gap:10px;">
-            <button onClick="{{ go.home }}" style="background:none;border:none;color:rgba(255,255,255,.82);font-size:16px;cursor:pointer;padding:0;text-align:right;">בית</button>
-            <button onClick="{{ go.chat }}" style="background:none;border:none;color:rgba(255,255,255,.82);font-size:16px;cursor:pointer;padding:0;text-align:right;">העוזר הדיגיטלי</button>
-            <button onClick="{{ go.rights }}" style="background:none;border:none;color:rgba(255,255,255,.82);font-size:16px;cursor:pointer;padding:0;text-align:right;">הזכויות שלי</button>
-          </div>
-        </div>
-        <div>
-          <div style="font-size:17px;font-weight:700;color:#fff;margin-bottom:12px;">צריך/ה עזרה?</div>
-          <div style="display:flex;flex-direction:column;gap:10px;font-size:16px;color:rgba(255,255,255,.82);">
-            <a href="tel:030000000" style="color:#fff;font-weight:700;text-decoration:none;">טלפון: 03-0000000</a>
-            <span>ימים א׳–ה׳ · 9:00–16:00</span>
-            <span>מענה אנושי מצוות הצעד הבא</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div style="border-top:1px solid rgba(255,255,255,.12);">
-      <div style="max-width:1200px;margin:0 auto;padding:18px 24px;font-size:14px;color:rgba(255,255,255,.6);line-height:1.5;">© 2026 הצעד הבא · האתר נועד למסירת מידע בלבד ואינו מהווה ייעוץ משפטי או רפואי.</div>
-    </div>
-  </footer>
-  </sc-if>
-
-  <sc-if value="{{ showChrome }}" hint-placeholder-val="{{ true }}">
-  <nav data-bottom-nav aria-label="ניווט ראשי" style="position:fixed;bottom:0;inset-inline:0;background:#3F444B;height:64px;z-index:60;box-shadow:0 -2px 12px rgba(0,0,0,.18);">
-    <button onClick="{{ go.home }}" style="{{ bnav.home }}">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
-      בית
-    </button>
-    <button onClick="{{ go.chat }}" style="{{ bnav.chat }}">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      עוזר
-    </button>
-    <button onClick="{{ go.rights }}" style="{{ bnav.rights }}">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M8 13h8M8 17h5"/></svg>
-      זכויות
-    </button>
-    <button onClick="{{ go.login }}" style="{{ bnav.login }}">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
-      כניסה
-    </button>
-  </nav>
-  </sc-if>
-
-  <!-- ================= PERSONALIZATION WIZARD ================= -->
-  <sc-if value="{{ wizardOpen }}" hint-placeholder-val="{{ false }}">
-  <div role="dialog" aria-modal="true" aria-label="התאמה אישית של הזכויות" dir="rtl" style="position:fixed;inset:0;z-index:200;background:rgba(13,61,94,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:16px 16px 28px;overflow-y:auto;">
-
-    <sc-if value="{{ isSummary }}" hint-placeholder-val="{{ false }}">
-    <div style="width:100%;max-width:620px;background:#fff;border-radius:22px;box-shadow:0 24px 60px rgba(0,0,0,.3);overflow:hidden;">
-      <div style="position:relative;background:#165D91;padding:30px 30px 26px;color:#fff;">
-        <button onClick="{{ closeLater }}" aria-label="סגירה" style="position:absolute;top:16px;left:16px;width:38px;height:38px;border:none;background:rgba(255,255,255,.18);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
-        </button>
-        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.16);border-radius:999px;padding:6px 14px;margin-bottom:16px;font-size:14px;font-weight:700;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
-          ההתאמה האישית הושלמה
-        </div>
-        <div style="font-size:15px;color:rgba(255,255,255,.82);margin-bottom:6px;">הגורם המטפל שלך</div>
-        <h2 style="font-size:clamp(22px,3vw,28px);font-weight:800;margin:0 0 8px;line-height:1.2;">{{ summary.authName }}</h2>
-        <sc-if value="{{ summary.hasProfile }}" hint-placeholder-val="{{ false }}">
-          <div style="font-size:16px;color:rgba(255,255,255,.88);">{{ summary.profileLine }}</div>
-        </sc-if>
-      </div>
-      <div style="padding:24px 30px 28px;">
-        <sc-if value="{{ summary.hasNote }}" hint-placeholder-val="{{ false }}">
-          <div style="background:#EDF5FB;border:1px solid #D6E3EF;border-radius:14px;padding:15px 18px;margin-bottom:20px;font-size:16px;color:#165D91;line-height:1.55;">{{ summary.note }}</div>
-        </sc-if>
-        <div style="font-size:18px;font-weight:800;color:#0D3D5E;margin:2px 0 14px;">הזכויות שרלוונטיות עבורך</div>
-        <div style="display:flex;flex-direction:column;gap:12px;">
-          <sc-for list="{{ summary.rights }}" as="r" hint-placeholder-count="3">
-            <div style="border:1px solid #E4E4E4;border-radius:14px;padding:16px 18px;">
-              <div style="font-size:17px;font-weight:700;color:#165D91;margin-bottom:10px;">{{ r.h }}</div>
-              <div style="display:flex;flex-direction:column;gap:8px;">
-                <sc-for list="{{ r.items }}" as="it" hint-placeholder-count="3">
-                  <div style="display:flex;gap:9px;align-items:flex-start;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E7FC3" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:3px;"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span style="font-size:15px;color:#444;line-height:1.5;">{{ it }}</span>
+              <div ref="{{ scrollRef }}" data-chat-log role="log" aria-live="polite"
+                style="background:#fff;border:1px solid #DDD;border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:16px;min-height:280px;max-height:min(56vh,540px);overflow-y:auto;">
+                <sc-for list="{{ messageViews }}" as="m" hint-placeholder-count="2">
+                  <div style="{{ m.rowStyle }}">
+                    <div style="{{ m.bubbleStyle }}">{{ m.text }}</div>
                   </div>
                 </sc-for>
+                <sc-if value="{{ typing }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;justify-content:flex-start;">
+                    <div
+                      style="background:#F4F4F4;border-radius:14px 14px 14px 4px;padding:16px 20px;display:flex;gap:6px;align-items:center;">
+                      <span
+                        style="width:9px;height:9px;border-radius:50%;background:#1E7FC3;animation:blink 1.2s infinite;"></span>
+                      <span
+                        style="width:9px;height:9px;border-radius:50%;background:#1E7FC3;animation:blink 1.2s infinite .2s;"></span>
+                      <span
+                        style="width:9px;height:9px;border-radius:50%;background:#1E7FC3;animation:blink 1.2s infinite .4s;"></span>
+                    </div>
+                  </div>
+                </sc-if>
               </div>
+
+              <sc-if value="{{ showFullSuggestions }}" hint-placeholder-val="{{ true }}">
+                <div>
+                  <div style="margin-top:20px;">
+                    <div style="font-size:16px;font-weight:700;color:#555;margin-bottom:10px;">שאלות נפוצות:</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:10px;">
+                      <sc-for list="{{ suggestions }}" as="s" hint-placeholder-count="4">
+                        <button onClick="{{ s.onClick }}"
+                          style="background:#fff;border:1.5px solid #D6E3EF;color:#165D91;font-size:16px;font-weight:600;padding:11px 18px;border-radius:22px;cursor:pointer;text-align:right;"
+                          style-hover="background:#EDF5FB;border-color:#1E7FC3;color:#165D91;text-align:right;">{{
+                          s.text }}</button>
+                      </sc-for>
+                    </div>
+                  </div>
+                  <div style="margin-top:18px;">
+                    <div style="font-size:16px;font-weight:700;color:#555;margin-bottom:10px;">או לפי סוג הקטיעה:</div>
+                    <div style="display:flex;flex-wrap:wrap;gap:10px;">
+                      <sc-for list="{{ catChips }}" as="c" hint-placeholder-count="4">
+                        <button onClick="{{ c.onClick }}"
+                          style="background:#FDEBD9;border:1.5px solid #F6C9A6;color:#C2511A;font-size:16px;font-weight:600;padding:11px 18px;border-radius:22px;cursor:pointer;text-align:right;"
+                          style-hover="background:#FBE0CB;border-color:#F06723;color:#C2511A;text-align:right;">{{
+                          c.title }}</button>
+                      </sc-for>
+                    </div>
+                  </div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ showCompactSuggestions }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:18px;">
+                  <div style="font-size:15px;font-weight:700;color:#7A7A7A;margin-bottom:10px;">שאלות נוספות:</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                    <sc-for list="{{ suggestions }}" as="s" hint-placeholder-count="3">
+                      <button onClick="{{ s.onClick }}"
+                        style="background:#fff;border:1.5px solid #D6E3EF;color:#165D91;font-size:15px;font-weight:600;padding:9px 14px;border-radius:20px;cursor:pointer;text-align:right;"
+                        style-hover="background:#EDF5FB;border-color:#1E7FC3;color:#165D91;text-align:right;">{{ s.text
+                        }}</button>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+
+              <form data-chat-input onSubmit="{{ onChatSubmit }}"
+                style="position:sticky;bottom:16px;margin-top:22px;display:flex;gap:10px;background:#fff;border:1.5px solid #D6E3EF;border-radius:18px;padding:9px;box-shadow:0 8px 26px rgba(13,61,94,.12);flex-wrap:nowrap;">
+                <input value="{{ chatInput }}" onChange="{{ onChatInput }}" aria-label="כתיבת שאלה לעוזר הדיגיטלי"
+                  placeholder="כתוב/כתבי את השאלה שלך כאן…"
+                  style="flex:1 1 0;min-width:0;border:none;height:50px;padding:0 14px;font-size:18px;color:#333;background:none;outline:none;" />
+                <button type="submit" data-send-btn
+                  style="flex:none;height:50px;padding:0 24px;border:none;border-radius:25px;background:#1E7FC3;color:#fff;font-size:17px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
+                  <svg data-send-icon width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="20" y1="4" x2="9.5" y2="14.5" />
+                    <polygon points="20 4 13.5 20 9.5 14.5 4 10.5 20 4" />
+                  </svg>
+                  שליחה
+                </button>
+              </form>
+
+              <div
+                style="margin-top:16px;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:center;background:#EDF5FB;border-radius:12px;padding:14px 18px;">
+                <span style="font-size:16px;color:#165D91;font-weight:600;">מעדיף/ה לדבר עם אדם מהצוות?</span>
+                <a href="tel:030000000"
+                  style="font-size:16px;color:#165D91;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#165D91" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                      d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.4 2.1L8 11.5a16 16 0 0 0 6 6l1.1-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2Z" />
+                  </svg>
+                  התקשרו: 03-0000000
+                </a>
+              </div>
+
+              <sc-if value="{{ showDisclaimer }}" hint-placeholder-val="{{ true }}">
+                <p style="font-size:14px;color:#7A7A7A;text-align:center;margin:14px 0 0;line-height:1.5;">זהו אזור
+                  הדגמה. בגרסה המלאה העוזר מבוסס על מאגר הזכויות המעודכן ואינו מהווה ייעוץ משפטי.</p>
+              </sc-if>
             </div>
-          </sc-for>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:10px;margin-top:22px;">
-          <button onClick="{{ summary.toChat }}" style="height:54px;border:none;border-radius:27px;background:#F06723;color:#fff;font-size:17px;font-weight:700;cursor:pointer;">שאל/י את העוזר הדיגיטלי על המצב שלך</button>
-          <button onClick="{{ summary.toRights }}" style="height:54px;border:1.5px solid #D6E3EF;border-radius:27px;background:#fff;color:#165D91;font-size:17px;font-weight:700;cursor:pointer;">צפה/י בכל הזכויות שלי</button>
-        </div>
-        <div style="margin-top:16px;display:flex;gap:20px;justify-content:center;">
-          <button onClick="{{ editAnswers }}" style="background:none;border:none;color:#7A7A7A;font-size:15px;font-weight:600;cursor:pointer;">עריכת התשובות</button>
-          <button onClick="{{ closeLater }}" style="background:none;border:none;color:#7A7A7A;font-size:15px;font-weight:600;cursor:pointer;">סגירה</button>
-        </div>
-      </div>
-    </div>
-    </sc-if>
-
-    <sc-if value="{{ isSteps }}" hint-placeholder-val="{{ true }}">
-
-    <sc-if value="{{ wzStepper }}" hint-placeholder-val="{{ true }}">
-    <div style="position:relative;width:100%;max-width:560px;background:#fff;border-radius:22px;box-shadow:0 24px 60px rgba(0,0,0,.3);padding:30px 30px 24px;">
-      <button onClick="{{ closeLater }}" aria-label="סגירה" style="position:absolute;top:16px;left:16px;width:38px;height:38px;border:none;background:#F4F4F4;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#7A7A7A;" style-hover="background:#E9E9E9;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
-      </button>
-      <sc-if value="{{ canBack }}" hint-placeholder-val="{{ false }}">
-        <button onClick="{{ wizardBack }}" style="position:absolute;top:18px;right:24px;background:none;border:none;color:#165D91;font-size:15px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:5px;padding:0;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#165D91" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
-          חזרה
-        </button>
-      </sc-if>
-      <div style="display:flex;gap:6px;margin:6px 0 8px;">
-        <sc-for list="{{ progress }}" as="p" hint-placeholder-count="5"><span style="{{ p.style }}"></span></sc-for>
-      </div>
-      <div style="font-size:14px;color:#7A7A7A;font-weight:600;margin-bottom:16px;">שלב {{ stepNum }} מתוך {{ stepTotal }}</div>
-      <h2 style="font-size:26px;color:#0D3D5E;font-weight:800;margin:0 0 8px;line-height:1.25;">{{ step.title }}</h2>
-      <p style="font-size:17px;color:#555;margin:0 0 22px;line-height:1.5;">{{ step.help }}</p>
-      <div style="display:flex;flex-direction:column;gap:12px;">
-        <sc-for list="{{ stepOptions }}" as="o" hint-placeholder-count="3">
-          <button onClick="{{ o.onClick }}" style="{{ o.stepperStyle }}" style-hover="border-color:#1E7FC3;box-shadow:0 6px 18px rgba(13,61,94,.10);">
-            <span style="{{ o.dotStyle }}"></span>
-            <span style="display:flex;flex-direction:column;gap:2px;align-items:flex-start;flex:1;">
-              <span style="font-size:19px;font-weight:700;color:#0D3D5E;">{{ o.label }}</span>
-              <sc-if value="{{ o.hasDesc }}" hint-placeholder-val="{{ false }}"><span style="font-size:15px;color:#777;">{{ o.desc }}</span></sc-if>
-            </span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E7FC3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><path d="M15 6l-6 6 6 6"/></svg>
-          </button>
-        </sc-for>
-      </div>
-      <sc-if value="{{ step.skippable }}" hint-placeholder-val="{{ false }}">
-        <button onClick="{{ skipStep }}" style="width:100%;margin-top:14px;background:none;border:none;color:#7A7A7A;font-size:15px;font-weight:600;cursor:pointer;padding:6px;">דלג/י על שאלה זו</button>
-      </sc-if>
-      <div style="margin-top:16px;border-top:1px solid #EEE;padding-top:14px;text-align:center;">
-        <button onClick="{{ closeLater }}" style="background:none;border:none;color:#7A7A7A;font-size:15px;font-weight:600;cursor:pointer;">אעשה זאת מאוחר יותר</button>
-      </div>
-    </div>
-    </sc-if>
-
-    <sc-if value="{{ wzChat }}" hint-placeholder-val="{{ false }}">
-    <div style="position:relative;width:100%;max-width:540px;background:#fff;border-radius:22px;box-shadow:0 24px 60px rgba(0,0,0,.3);overflow:hidden;">
-      <div style="height:4px;background:#EDF5FB;"><div style="{{ chatBarStyle }}"></div></div>
-      <div style="padding:22px 26px 24px;">
-        <button onClick="{{ closeLater }}" aria-label="סגירה" style="position:absolute;top:18px;left:16px;width:36px;height:36px;border:none;background:#F4F4F4;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#7A7A7A;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
-        </button>
-        <sc-if value="{{ hasChips }}" hint-placeholder-val="{{ false }}">
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;padding-left:42px;">
-            <sc-for list="{{ chips }}" as="c" hint-placeholder-count="2">
-              <button onClick="{{ c.onClick }}" style="display:inline-flex;align-items:center;gap:5px;background:#EDF5FB;border:1px solid #D6E3EF;color:#165D91;font-size:14px;font-weight:600;padding:6px 12px;border-radius:16px;cursor:pointer;">
-                {{ c.text }}
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#165D91" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-              </button>
-            </sc-for>
           </div>
         </sc-if>
-        <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:18px;">
-          <span style="width:44px;height:44px;border-radius:50%;background:#165D91;display:flex;align-items:center;justify-content:center;flex:none;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          </span>
-          <div style="background:#F4F4F4;border-radius:16px 16px 16px 4px;padding:15px 19px;flex:1;">
-            <div style="font-size:20px;font-weight:700;color:#0D3D5E;margin-bottom:4px;line-height:1.3;">{{ step.title }}</div>
-            <div style="font-size:16px;color:#555;line-height:1.5;">{{ step.help }}</div>
-          </div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <sc-for list="{{ stepOptions }}" as="o" hint-placeholder-count="3">
-            <button onClick="{{ o.onClick }}" style="{{ o.chatStyle }}" style-hover="border-color:#F06723;">
-              <span>{{ o.label }}</span>
-              <sc-if value="{{ o.hasDesc }}" hint-placeholder-val="{{ false }}"><span style="font-size:14px;font-weight:500;opacity:.85;">· {{ o.desc }}</span></sc-if>
-            </button>
-          </sc-for>
-        </div>
-        <div style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;min-height:24px;">
-          <sc-if value="{{ canBack }}" hint-placeholder-val="{{ false }}">
-            <button onClick="{{ wizardBack }}" style="background:none;border:none;color:#165D91;font-size:15px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:5px;padding:0;">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#165D91" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
-              חזרה
-            </button>
-          </sc-if>
-          <sc-if value="{{ step.skippable }}" hint-placeholder-val="{{ false }}">
-            <button onClick="{{ skipStep }}" style="margin-inline-start:auto;background:none;border:none;color:#7A7A7A;font-size:15px;font-weight:600;cursor:pointer;padding:0;">לא עכשיו</button>
-          </sc-if>
-        </div>
-        <div style="margin-top:14px;border-top:1px solid #EEE;padding-top:13px;text-align:center;">
-          <button onClick="{{ closeLater }}" style="background:none;border:none;color:#7A7A7A;font-size:15px;font-weight:600;cursor:pointer;">אעשה זאת מאוחר יותר</button>
-        </div>
-      </div>
-    </div>
-    </sc-if>
 
-    <sc-if value="{{ wzGuided }}" hint-placeholder-val="{{ false }}">
-    <div style="width:100%;max-width:780px;background:#fff;border-radius:22px;box-shadow:0 24px 60px rgba(0,0,0,.3);overflow:hidden;">
-      <div style="display:flex;flex-wrap:wrap;">
-        <div style="flex:1 1 220px;background:#0D3D5E;color:#fff;padding:26px 22px;min-width:200px;">
-          <div style="font-size:13px;color:rgba(255,255,255,.6);font-weight:700;letter-spacing:.02em;margin-bottom:16px;">ההתאמה האישית שלך</div>
-          <div style="display:flex;flex-direction:column;gap:2px;">
-            <sc-for list="{{ checklist }}" as="c" hint-placeholder-count="5">
-              <button onClick="{{ c.onClick }}" style="{{ c.rowStyle }}">
-                <span style="{{ c.numStyle }}">{{ c.num }}</span>
-                <span style="display:flex;flex-direction:column;align-items:flex-start;gap:1px;flex:1;min-width:0;">
-                  <span style="font-size:15px;font-weight:600;color:#fff;">{{ c.label }}</span>
-                  <sc-if value="{{ c.hasValue }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:#9FC4E0;">{{ c.value }}</span></sc-if>
-                </span>
+        <!-- ================= RIGHTS BROWSER ================= -->
+        <sc-if value="{{ isRights }}" hint-placeholder-val="{{ false }}">
+          <div data-page style="max-width:1200px;margin:0 auto;padding:48px 24px;">
+            <h1 style="font-size:clamp(26px,3vw,34px);color:#0D3D5E;font-weight:800;margin:0 0 8px;">הזכויות שלי</h1>
+            <p style="font-size:18px;color:#555;margin:0 0 36px;max-width:680px;line-height:1.5;">כל הזכויות מסודרות לפי
+              נושא ולפי סוג הקטיעה. בחר/י כרטיס כדי לקרוא בפירוט.</p>
+
+            <h2 style="font-size:22px;color:#165D91;font-weight:700;margin:0 0 18px;">נושאים מרכזיים</h2>
+            <div data-grid
+              style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-bottom:44px;">
+              <sc-for list="{{ quickCards }}" as="t" hint-placeholder-count="3">
+                <button data-card onClick="{{ t.onClick }}"
+                  style="text-align:right;background:#fff;border:1px solid #DDD;border-radius:12px;padding:24px;cursor:pointer;display:flex;flex-direction:column;gap:12px;transition:box-shadow .15s,transform .15s,border-color .15s;"
+                  style-hover="border-color:#1E7FC3;box-shadow:0 10px 26px rgba(13,61,94,.12);transform:translateY(-3px);background:#fff;text-align:right;">
+                  <span
+                    style="align-self:flex-start;background:#EDF5FB;color:#165D91;font-size:14px;font-weight:600;padding:5px 12px;border-radius:16px;">{{
+                    t.tag }}</span>
+                  <span style="font-size:20px;font-weight:700;color:#0D3D5E;">{{ t.title }}</span>
+                  <span style="font-size:16px;color:#555;line-height:1.5;">{{ t.lead }}</span>
+                  <span style="font-size:16px;font-weight:700;color:#1E7FC3;margin-top:2px;">לפרטים ‹</span>
+                </button>
+              </sc-for>
+            </div>
+
+            <h2 style="font-size:22px;color:#165D91;font-weight:700;margin:0 0 18px;">לפי סוג הקטיעה</h2>
+            <div data-grid style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;">
+              <sc-for list="{{ causeCards }}" as="t" hint-placeholder-count="4">
+                <button data-card onClick="{{ t.onClick }}"
+                  style="text-align:right;background:#fff;border:1px solid #DDD;border-radius:12px;padding:24px;cursor:pointer;display:flex;flex-direction:column;gap:12px;transition:box-shadow .15s,transform .15s,border-color .15s;"
+                  style-hover="border-color:#1E7FC3;box-shadow:0 10px 26px rgba(13,61,94,.12);transform:translateY(-3px);background:#fff;text-align:right;">
+                  <span
+                    style="align-self:flex-start;background:#EDF5FB;color:#165D91;font-size:14px;font-weight:600;padding:5px 12px;border-radius:16px;">{{
+                    t.tag }}</span>
+                  <span style="font-size:20px;font-weight:700;color:#0D3D5E;line-height:1.3;">{{ t.title }}</span>
+                  <span style="font-size:16px;color:#555;">גורם מטפל: {{ t.body }}</span>
+                  <span style="font-size:16px;font-weight:700;color:#1E7FC3;margin-top:2px;">לפרטים ‹</span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ================= DETAIL ================= -->
+        <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
+          <div data-page style="max-width:820px;margin:0 auto;padding:32px 24px 56px;">
+            <button onClick="{{ backFromDetail }}"
+              style="background:none;border:none;color:#165D91;font-size:16px;font-weight:600;cursor:pointer;padding:0;margin-bottom:22px;display:inline-flex;align-items:center;gap:6px;">›
+              {{ detailBackLabel }}</button>
+            <div style="background:#EDF5FB;border-radius:16px;padding:30px 28px;margin-bottom:28px;">
+              <span
+                style="display:inline-block;background:#fff;color:#165D91;font-size:14px;font-weight:600;padding:5px 12px;border-radius:16px;margin-bottom:14px;">{{
+                topic.tag }}</span>
+              <h1
+                style="font-size:clamp(24px,3vw,32px);color:#0D3D5E;font-weight:800;margin:0 0 12px;line-height:1.25;">
+                {{ topic.title }}</h1>
+              <p style="font-size:18px;color:#333;line-height:1.6;margin:0 0 18px;">{{ topic.lead }}</p>
+              <div
+                style="display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid #D6E3EF;border-radius:12px;padding:12px 16px;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2E8B3F" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 12l2 2 4-4" />
+                  <circle cx="12" cy="12" r="9" />
+                </svg>
+                <span style="font-size:16px;color:#333;"><strong style="color:#0D3D5E;">גורם מטפל:</strong> {{
+                  topic.body }}</span>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:22px;">
+              <sc-for list="{{ topic.sections }}" as="sec" hint-placeholder-count="3">
+                <div style="background:#fff;border:1px solid #DDD;border-radius:12px;padding:24px;">
+                  <h2 style="font-size:21px;color:#165D91;font-weight:700;margin:0 0 16px;">{{ sec.h }}</h2>
+                  <div style="display:flex;flex-direction:column;gap:12px;">
+                    <sc-for list="{{ sec.items }}" as="it" hint-placeholder-count="3">
+                      <div style="display:flex;gap:12px;align-items:flex-start;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E7FC3" stroke-width="2.2"
+                          stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:2px;">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        <span style="font-size:17px;color:#333;line-height:1.55;">{{ it }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="background:#165D91;border-radius:16px;padding:28px;margin-top:28px;text-align:center;">
+              <p style="font-size:18px;color:#fff;font-weight:600;margin:0 0 18px;line-height:1.5;">יש לך שאלה ספציפית
+                על {{ topic.title }}?</p>
+              <button onClick="{{ askTopic }}"
+                style="height:54px;padding:0 32px;border:none;border-radius:27px;background:#F06723;color:#fff;font-size:17px;font-weight:700;cursor:pointer;">שאל/י
+                את העוזר הדיגיטלי</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ================= LOGIN ================= -->
+        <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+          <div
+            style="min-height:100vh;background:#F4F4F4;padding:28px 20px 48px;display:flex;flex-direction:column;align-items:center;">
+            <div style="width:100%;max-width:440px;margin-bottom:6px;">
+              <button onClick="{{ go.home }}"
+                style="background:none;border:none;color:#165D91;font-size:16px;font-weight:600;cursor:pointer;padding:8px 0;display:inline-flex;align-items:center;gap:4px;">‹
+                חזרה לאתר</button>
+            </div>
+            <button onClick="{{ go.home }}" aria-label="הצעד הבא - לדף הבית"
+              style="background:none;border:none;cursor:pointer;margin:6px 0 24px;">
+              <img src="assets/logo.png" alt="הצעד הבא" style="height:52px;width:auto;display:block;" />
+            </button>
+            <div
+              style="width:100%;max-width:440px;background:#fff;border:1px solid #DDD;border-radius:16px;padding:34px 30px;box-shadow:0 10px 30px rgba(13,61,94,.08);">
+              <h1 style="font-size:28px;color:#0D3D5E;font-weight:800;margin:0 0 6px;text-align:center;">ברוך/ה שובך
+              </h1>
+              <p style="font-size:17px;color:#555;margin:0 0 26px;text-align:center;">התחבר/י כדי להמשיך לזכויות שלך.
+              </p>
+
+              <label style="display:block;margin-bottom:18px;">
+                <span style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">אימייל</span>
+                <input type="email" dir="ltr" value="{{ F.loginEmail.value }}" onChange="{{ F.loginEmail.onChange }}"
+                  placeholder="name@email.com" style="{{ F.loginEmail.style }}"
+                  style-focus="border-color:#1E7FC3;background:#EDF5FB;" />
+                <sc-if value="{{ F.loginEmail.bad }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;gap:6px;margin-top:7px;color:#C0392B;font-size:14px;"><svg
+                      width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2.2"
+                      stroke-linecap="round">
+                      <circle cx="12" cy="12" r="9" />
+                      <line x1="12" y1="8" x2="12" y2="13" />
+                      <line x1="12" y1="16.5" x2="12.01" y2="16.5" />
+                    </svg><span>{{ F.loginEmail.err }}</span></div>
+                </sc-if>
+              </label>
+              <label style="display:block;margin-bottom:10px;">
+                <span style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">סיסמה</span>
+                <div style="position:relative;">
+                  <input type="{{ loginPwType }}" value="{{ F.loginPw.value }}" onChange="{{ F.loginPw.onChange }}"
+                    placeholder="הקלד/י סיסמה" style="{{ F.loginPw.style }}"
+                    style-focus="border-color:#1E7FC3;background:#EDF5FB;" />
+                  <button type="button" onClick="{{ toggleLoginPw }}" aria-label="הצגה או הסתרה של הסיסמה"
+                    style="position:absolute;left:8px;top:50%;transform:translateY(-50%);width:40px;height:40px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#7A7A7A;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  </button>
+                </div>
+                <sc-if value="{{ F.loginPw.bad }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;gap:6px;margin-top:7px;color:#C0392B;font-size:14px;"><svg
+                      width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2.2"
+                      stroke-linecap="round">
+                      <circle cx="12" cy="12" r="9" />
+                      <line x1="12" y1="8" x2="12" y2="13" />
+                      <line x1="12" y1="16.5" x2="12.01" y2="16.5" />
+                    </svg><span>{{ F.loginPw.err }}</span></div>
+                </sc-if>
+              </label>
+              <div style="text-align:left;margin-bottom:22px;"><a href="#"
+                  style="font-size:15px;color:#165D91;font-weight:600;text-decoration:none;">שכחת סיסמה?</a></div>
+
+              <button onClick="{{ loginSubmit }}" disabled="{{ busy }}" style="{{ pbtnStyle }}">{{ loginLabel
+                }}</button>
+
+              <div style="display:flex;align-items:center;gap:14px;margin:24px 0;">
+                <span style="flex:1;height:1px;background:#DDD;"></span>
+                <span style="font-size:15px;color:#7A7A7A;">או</span>
+                <span style="flex:1;height:1px;background:#DDD;"></span>
+              </div>
+
+              <button onClick="{{ login.google }}"
+                style="width:100%;height:56px;border:1.5px solid #DDD;border-radius:28px;background:#fff;color:#333;font-size:17px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px;"
+                style-hover="background:#F8F8F8;width:100%;">
+                <svg width="22" height="22" viewBox="0 0 48 48">
+                  <path fill="#4285F4"
+                    d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z" />
+                  <path fill="#34A853"
+                    d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z" />
+                  <path fill="#FBBC05"
+                    d="M11.69 28.18c-.44-1.32-.69-2.73-.69-4.18s.25-2.86.69-4.18v-5.7H4.34A21.99 21.99 0 0 0 2 24c0 3.55.85 6.91 2.34 9.88l7.35-5.7z" />
+                  <path fill="#EA4335"
+                    d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z" />
+                </svg>
+                המשך עם Google
               </button>
-            </sc-for>
+              <button onClick="{{ login.apple }}"
+                style="width:100%;height:56px;border:1.5px solid #DDD;border-radius:28px;background:#fff;color:#333;font-size:17px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px;"
+                style-hover="background:#F8F8F8;width:100%;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#000">
+                  <path
+                    d="M16.36 12.93c-.02-2.27 1.85-3.36 1.94-3.41-1.06-1.55-2.71-1.76-3.29-1.78-1.4-.14-2.73.82-3.44.82-.71 0-1.8-.8-2.96-.78-1.52.02-2.93.88-3.71 2.24-1.58 2.74-.4 6.79 1.13 9.01.75 1.09 1.64 2.31 2.81 2.27 1.13-.05 1.55-.73 2.92-.73 1.36 0 1.75.73 2.95.71 1.22-.02 1.99-1.11 2.74-2.21.86-1.27 1.22-2.5 1.24-2.56-.03-.01-2.38-.91-2.4-3.61zM14.13 6.16c.62-.76 1.04-1.8.93-2.85-.9.04-1.99.6-2.63 1.35-.57.67-1.08 1.74-.94 2.76 1 .08 2.02-.51 2.64-1.26z" />
+                </svg>
+                המשך עם Apple
+              </button>
+
+              <p style="text-align:center;font-size:16px;color:#555;margin:26px 0 0;">אין לך עדיין חשבון? <button
+                  onClick="{{ go.signup }}"
+                  style="background:none;border:none;color:#165D91;font-size:16px;font-weight:700;cursor:pointer;padding:0;">להרשמה
+                  ›</button></p>
+            </div>
           </div>
-          <div style="margin-top:22px;border-top:1px solid rgba(255,255,255,.15);padding-top:16px;">
-            <div style="font-size:13px;color:rgba(255,255,255,.6);margin-bottom:6px;">הגורם המטפל</div>
-            <div style="font-size:16px;font-weight:700;color:#fff;line-height:1.35;">{{ liveAuthorityText }}</div>
+        </sc-if>
+
+        <!-- ================= SIGNUP ================= -->
+        <sc-if value="{{ isSignup }}" hint-placeholder-val="{{ false }}">
+          <div
+            style="min-height:100vh;background:#F4F4F4;padding:28px 20px 48px;display:flex;flex-direction:column;align-items:center;">
+            <div style="width:100%;max-width:520px;margin-bottom:6px;">
+              <button onClick="{{ go.home }}"
+                style="background:none;border:none;color:#165D91;font-size:16px;font-weight:600;cursor:pointer;padding:8px 0;display:inline-flex;align-items:center;gap:4px;">‹
+                חזרה לאתר</button>
+            </div>
+            <button onClick="{{ go.home }}" aria-label="הצעד הבא - לדף הבית"
+              style="background:none;border:none;cursor:pointer;margin:6px 0 24px;">
+              <img src="assets/logo.png" alt="הצעד הבא" style="height:52px;width:auto;display:block;" />
+            </button>
+
+            <sc-if value="{{ isSignupForm }}" hint-placeholder-val="{{ true }}">
+              <div
+                style="width:100%;max-width:520px;background:#fff;border:1px solid #DDD;border-radius:16px;padding:34px 30px;box-shadow:0 10px 30px rgba(13,61,94,.08);">
+                <h1 style="font-size:28px;color:#0D3D5E;font-weight:800;margin:0 0 6px;text-align:center;">יצירת חשבון
+                  חדש</h1>
+                <p style="font-size:17px;color:#555;margin:0 0 24px;text-align:center;">כמה פרטים כדי שנוכל להתאים לך את
+                  הזכויות הנכונות.</p>
+
+                <button onClick="{{ signup.google }}"
+                  style="width:100%;height:56px;border:1.5px solid #DDD;border-radius:28px;background:#fff;color:#333;font-size:17px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px;"
+                  style-hover="background:#F8F8F8;width:100%;">
+                  <svg width="22" height="22" viewBox="0 0 48 48">
+                    <path fill="#4285F4"
+                      d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z" />
+                    <path fill="#34A853"
+                      d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z" />
+                    <path fill="#FBBC05"
+                      d="M11.69 28.18c-.44-1.32-.69-2.73-.69-4.18s.25-2.86.69-4.18v-5.7H4.34A21.99 21.99 0 0 0 2 24c0 3.55.85 6.91 2.34 9.88l7.35-5.7z" />
+                    <path fill="#EA4335"
+                      d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z" />
+                  </svg>
+                  הרשמה מהירה עם Google
+                </button>
+                <button onClick="{{ signup.apple }}"
+                  style="width:100%;height:56px;border:1.5px solid #DDD;border-radius:28px;background:#fff;color:#333;font-size:17px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px;"
+                  style-hover="background:#F8F8F8;width:100%;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#000">
+                    <path
+                      d="M16.36 12.93c-.02-2.27 1.85-3.36 1.94-3.41-1.06-1.55-2.71-1.76-3.29-1.78-1.4-.14-2.73.82-3.44.82-.71 0-1.8-.8-2.96-.78-1.52.02-2.93.88-3.71 2.24-1.58 2.74-.4 6.79 1.13 9.01.75 1.09 1.64 2.31 2.81 2.27 1.13-.05 1.55-.73 2.92-.73 1.36 0 1.75.73 2.95.71 1.22-.02 1.99-1.11 2.74-2.21.86-1.27 1.22-2.5 1.24-2.56-.03-.01-2.38-.91-2.4-3.61zM14.13 6.16c.62-.76 1.04-1.8.93-2.85-.9.04-1.99.6-2.63 1.35-.57.67-1.08 1.74-.94 2.76 1 .08 2.02-.51 2.64-1.26z" />
+                  </svg>
+                  הרשמה מהירה עם Apple
+                </button>
+
+                <div style="display:flex;align-items:center;gap:14px;margin:24px 0;">
+                  <span style="flex:1;height:1px;background:#DDD;"></span>
+                  <span style="font-size:15px;color:#7A7A7A;">או הרשמה עם אימייל</span>
+                  <span style="flex:1;height:1px;background:#DDD;"></span>
+                </div>
+
+                <div style="display:flex;flex-direction:column;gap:18px;">
+                  <label style="display:block;">
+                    <span style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">שם
+                      מלא</span>
+                    <input type="text" value="{{ F.suName.value }}" onChange="{{ F.suName.onChange }}"
+                      placeholder="ישראל ישראלי" style="{{ F.suName.style }}"
+                      style-focus="border-color:#1E7FC3;background:#EDF5FB;" />
+                    <sc-if value="{{ F.suName.bad }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;align-items:center;gap:6px;margin-top:7px;color:#C0392B;font-size:14px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2.2"
+                          stroke-linecap="round">
+                          <circle cx="12" cy="12" r="9" />
+                          <line x1="12" y1="8" x2="12" y2="13" />
+                          <line x1="12" y1="16.5" x2="12.01" y2="16.5" />
+                        </svg><span>{{ F.suName.err }}</span>
+                      </div>
+                    </sc-if>
+                  </label>
+                  <label style="display:block;">
+                    <span
+                      style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">אימייל</span>
+                    <input type="email" dir="ltr" value="{{ F.suEmail.value }}" onChange="{{ F.suEmail.onChange }}"
+                      placeholder="name@email.com" style="{{ F.suEmail.style }}"
+                      style-focus="border-color:#1E7FC3;background:#EDF5FB;" />
+                    <sc-if value="{{ F.suEmail.bad }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;align-items:center;gap:6px;margin-top:7px;color:#C0392B;font-size:14px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2.2"
+                          stroke-linecap="round">
+                          <circle cx="12" cy="12" r="9" />
+                          <line x1="12" y1="8" x2="12" y2="13" />
+                          <line x1="12" y1="16.5" x2="12.01" y2="16.5" />
+                        </svg><span>{{ F.suEmail.err }}</span>
+                      </div>
+                    </sc-if>
+                  </label>
+                  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;">
+                    <label style="display:block;">
+                      <span
+                        style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">טלפון</span>
+                      <input type="tel" dir="ltr" value="{{ F.suPhone.value }}" onChange="{{ F.suPhone.onChange }}"
+                        placeholder="050-0000000" style="{{ F.suPhone.style }}"
+                        style-focus="border-color:#1E7FC3;background:#EDF5FB;" />
+                      <sc-if value="{{ F.suPhone.bad }}" hint-placeholder-val="{{ false }}">
+                        <div
+                          style="display:flex;align-items:center;gap:6px;margin-top:7px;color:#C0392B;font-size:14px;">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0392B"
+                            stroke-width="2.2" stroke-linecap="round">
+                            <circle cx="12" cy="12" r="9" />
+                            <line x1="12" y1="8" x2="12" y2="13" />
+                            <line x1="12" y1="16.5" x2="12.01" y2="16.5" />
+                          </svg><span>{{ F.suPhone.err }}</span>
+                        </div>
+                      </sc-if>
+                    </label>
+                    <label style="display:block;">
+                      <span
+                        style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">גיל</span>
+                      <input type="number" dir="ltr" value="{{ F.suAge.value }}" onChange="{{ F.suAge.onChange }}"
+                        placeholder="35" style="{{ F.suAge.style }}"
+                        style-focus="border-color:#1E7FC3;background:#EDF5FB;" />
+                      <sc-if value="{{ F.suAge.bad }}" hint-placeholder-val="{{ false }}">
+                        <div
+                          style="display:flex;align-items:center;gap:6px;margin-top:7px;color:#C0392B;font-size:14px;">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0392B"
+                            stroke-width="2.2" stroke-linecap="round">
+                            <circle cx="12" cy="12" r="9" />
+                            <line x1="12" y1="8" x2="12" y2="13" />
+                            <line x1="12" y1="16.5" x2="12.01" y2="16.5" />
+                          </svg><span>{{ F.suAge.err }}</span>
+                        </div>
+                      </sc-if>
+                    </label>
+                  </div>
+                  <label style="display:block;">
+                    <span style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">סוג
+                      הקטיעה</span>
+                    <select value="{{ F.suType.value }}" onChange="{{ F.suType.onChange }}" style="{{ F.suType.style }}"
+                      style-focus="border-color:#1E7FC3;background:#EDF5FB;">
+                      <option value="">בחר/י מהרשימה…</option>
+                      <sc-for list="{{ amputationTypes }}" as="opt" hint-placeholder-count="5">
+                        <option value="{{ opt }}">{{ opt }}</option>
+                      </sc-for>
+                    </select>
+                    <sc-if value="{{ F.suType.bad }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;align-items:center;gap:6px;margin-top:7px;color:#C0392B;font-size:14px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2.2"
+                          stroke-linecap="round">
+                          <circle cx="12" cy="12" r="9" />
+                          <line x1="12" y1="8" x2="12" y2="13" />
+                          <line x1="12" y1="16.5" x2="12.01" y2="16.5" />
+                        </svg><span>{{ F.suType.err }}</span>
+                      </div>
+                    </sc-if>
+                  </label>
+                  <label style="display:block;">
+                    <span
+                      style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">סיסמה</span>
+                    <div style="position:relative;">
+                      <input type="{{ suPwType }}" value="{{ F.suPw.value }}" onChange="{{ F.suPw.onChange }}"
+                        placeholder="בחר/י סיסמה (לפחות 6 תווים)" style="{{ F.suPw.style }}"
+                        style-focus="border-color:#1E7FC3;background:#EDF5FB;" />
+                      <button type="button" onClick="{{ toggleSuPw }}" aria-label="הצגה או הסתרה של הסיסמה"
+                        style="position:absolute;left:8px;top:50%;transform:translateY(-50%);width:40px;height:40px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#7A7A7A;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+                          <circle cx="12" cy="12" r="3" />
+                        </svg>
+                      </button>
+                    </div>
+                    <sc-if value="{{ F.suPw.bad }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;align-items:center;gap:6px;margin-top:7px;color:#C0392B;font-size:14px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2.2"
+                          stroke-linecap="round">
+                          <circle cx="12" cy="12" r="9" />
+                          <line x1="12" y1="8" x2="12" y2="13" />
+                          <line x1="12" y1="16.5" x2="12.01" y2="16.5" />
+                        </svg><span>{{ F.suPw.err }}</span>
+                      </div>
+                    </sc-if>
+                  </label>
+                </div>
+
+                <button onClick="{{ signupSubmit }}" disabled="{{ busy }}" style="{{ pbtnStyle }};margin-top:24px;">{{
+                  signupLabel }}</button>
+                <p style="text-align:center;font-size:16px;color:#555;margin:22px 0 0;">כבר יש לך חשבון? <button
+                    onClick="{{ go.login }}"
+                    style="background:none;border:none;color:#165D91;font-size:16px;font-weight:700;cursor:pointer;padding:0;">להתחברות
+                    ›</button></p>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isSignupComplete }}" hint-placeholder-val="{{ false }}">
+              <div
+                style="width:100%;max-width:520px;background:#fff;border:1px solid #DDD;border-radius:16px;padding:34px 30px;box-shadow:0 10px 30px rgba(13,61,94,.08);">
+                <div
+                  style="display:flex;align-items:center;gap:12px;background:#DFFAE3;border-radius:12px;padding:14px 16px;margin-bottom:24px;">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2E8B3F" stroke-width="2.2"
+                    stroke-linecap="round" stroke-linejoin="round" style="flex:none;">
+                    <path d="M9 12l2 2 4-4" />
+                    <circle cx="12" cy="12" r="9" />
+                  </svg>
+                  <span style="font-size:16px;color:#2E8B3F;font-weight:600;">התחברת באמצעות Google בהצלחה</span>
+                </div>
+                <h1 style="font-size:26px;color:#0D3D5E;font-weight:800;margin:0 0 6px;">כמעט סיימנו!</h1>
+                <p style="font-size:17px;color:#555;margin:0 0 24px;line-height:1.5;">נשלים כמה פרטים כדי שנוכל להתאים
+                  לך את הזכויות. הפרטים מ‑Google כבר מולאו עבורך.</p>
+
+                <div style="display:flex;flex-direction:column;gap:18px;">
+                  <label style="display:block;">
+                    <span style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">שם
+                      מלא</span>
+                    <input type="text" value="ישראל ישראלי" readonly
+                      style="width:100%;height:56px;border:1.5px solid #DDD;border-radius:8px;padding:0 16px;font-size:17px;color:#7A7A7A;background:#F4F4F4;outline:none;" />
+                  </label>
+                  <label style="display:block;">
+                    <span
+                      style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">אימייל</span>
+                    <input type="email" dir="ltr" value="israel@gmail.com" readonly
+                      style="width:100%;height:56px;border:1.5px solid #DDD;border-radius:8px;padding:0 16px;font-size:17px;color:#7A7A7A;background:#F4F4F4;outline:none;text-align:left;" />
+                  </label>
+                  <div style="height:1px;background:#EEE;margin:2px 0;"></div>
+                  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;">
+                    <label style="display:block;">
+                      <span style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">טלפון
+                        <span style="color:#C0392B;">*</span></span>
+                      <input type="tel" dir="ltr" value="{{ F.scPhone.value }}" onChange="{{ F.scPhone.onChange }}"
+                        placeholder="050-0000000" style="{{ F.scPhone.style }}"
+                        style-focus="border-color:#1E7FC3;background:#EDF5FB;" />
+                      <sc-if value="{{ F.scPhone.bad }}" hint-placeholder-val="{{ false }}">
+                        <div
+                          style="display:flex;align-items:center;gap:6px;margin-top:7px;color:#C0392B;font-size:14px;">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0392B"
+                            stroke-width="2.2" stroke-linecap="round">
+                            <circle cx="12" cy="12" r="9" />
+                            <line x1="12" y1="8" x2="12" y2="13" />
+                            <line x1="12" y1="16.5" x2="12.01" y2="16.5" />
+                          </svg><span>{{ F.scPhone.err }}</span>
+                        </div>
+                      </sc-if>
+                    </label>
+                    <label style="display:block;">
+                      <span style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">גיל <span
+                          style="color:#C0392B;">*</span></span>
+                      <input type="number" dir="ltr" value="{{ F.scAge.value }}" onChange="{{ F.scAge.onChange }}"
+                        placeholder="35" style="{{ F.scAge.style }}"
+                        style-focus="border-color:#1E7FC3;background:#EDF5FB;" />
+                      <sc-if value="{{ F.scAge.bad }}" hint-placeholder-val="{{ false }}">
+                        <div
+                          style="display:flex;align-items:center;gap:6px;margin-top:7px;color:#C0392B;font-size:14px;">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0392B"
+                            stroke-width="2.2" stroke-linecap="round">
+                            <circle cx="12" cy="12" r="9" />
+                            <line x1="12" y1="8" x2="12" y2="13" />
+                            <line x1="12" y1="16.5" x2="12.01" y2="16.5" />
+                          </svg><span>{{ F.scAge.err }}</span>
+                        </div>
+                      </sc-if>
+                    </label>
+                  </div>
+                  <label style="display:block;">
+                    <span style="display:block;font-size:16px;font-weight:600;color:#333;margin-bottom:8px;">סוג הקטיעה
+                      <span style="color:#C0392B;">*</span></span>
+                    <select value="{{ F.scType.value }}" onChange="{{ F.scType.onChange }}" style="{{ F.scType.style }}"
+                      style-focus="border-color:#1E7FC3;background:#EDF5FB;">
+                      <option value="">בחר/י מהרשימה…</option>
+                      <sc-for list="{{ amputationTypes }}" as="opt" hint-placeholder-count="5">
+                        <option value="{{ opt }}">{{ opt }}</option>
+                      </sc-for>
+                    </select>
+                    <sc-if value="{{ F.scType.bad }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;align-items:center;gap:6px;margin-top:7px;color:#C0392B;font-size:14px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2.2"
+                          stroke-linecap="round">
+                          <circle cx="12" cy="12" r="9" />
+                          <line x1="12" y1="8" x2="12" y2="13" />
+                          <line x1="12" y1="16.5" x2="12.01" y2="16.5" />
+                        </svg><span>{{ F.scType.err }}</span>
+                      </div>
+                    </sc-if>
+                  </label>
+                </div>
+
+                <button onClick="{{ completeSubmit }}" disabled="{{ busy }}" style="{{ pbtnStyle }};margin-top:24px;">{{
+                  completeLabel }}</button>
+                <button onClick="{{ signup.back }}"
+                  style="width:100%;height:48px;border:none;background:none;color:#7A7A7A;font-size:16px;font-weight:600;cursor:pointer;margin-top:8px;">חזרה</button>
+              </div>
+            </sc-if>
           </div>
-        </div>
-        <div style="flex:2 1 360px;padding:28px 30px 24px;position:relative;min-width:280px;">
-          <button onClick="{{ closeLater }}" aria-label="סגירה" style="position:absolute;top:16px;left:16px;width:36px;height:36px;border:none;background:#F4F4F4;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#7A7A7A;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+        </sc-if>
+
+      </main>
+
+      <sc-if value="{{ showFooter }}" hint-placeholder-val="{{ true }}">
+        <footer style="background:#3F444B;color:rgba(255,255,255,.82);flex:none;">
+          <div
+            style="max-width:1200px;margin:0 auto;padding:44px 24px 28px;display:flex;flex-wrap:wrap;gap:36px;justify-content:space-between;">
+            <div style="max-width:300px;">
+              <img src="assets/logo.png" alt="הצעד הבא"
+                style="height:46px;width:auto;background:#fff;border-radius:8px;padding:6px 10px;margin-bottom:14px;display:block;" />
+              <p style="font-size:16px;line-height:1.6;margin:0;color:rgba(255,255,255,.78);">הבית של קטועי הגפיים
+                בישראל - כדי שכל אחד יוכל להבין את הזכויות שלו ולממש אותן בקלות.</p>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:48px;">
+              <div>
+                <div style="font-size:17px;font-weight:700;color:#fff;margin-bottom:12px;">ניווט</div>
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                  <button onClick="{{ go.home }}"
+                    style="background:none;border:none;color:rgba(255,255,255,.82);font-size:16px;cursor:pointer;padding:0;text-align:right;">בית</button>
+                  <button onClick="{{ go.chat }}"
+                    style="background:none;border:none;color:rgba(255,255,255,.82);font-size:16px;cursor:pointer;padding:0;text-align:right;">העוזר
+                    הדיגיטלי</button>
+                  <button onClick="{{ go.rights }}"
+                    style="background:none;border:none;color:rgba(255,255,255,.82);font-size:16px;cursor:pointer;padding:0;text-align:right;">הזכויות
+                    שלי</button>
+                </div>
+              </div>
+              <div>
+                <div style="font-size:17px;font-weight:700;color:#fff;margin-bottom:12px;">צריך/ה עזרה?</div>
+                <div style="display:flex;flex-direction:column;gap:10px;font-size:16px;color:rgba(255,255,255,.82);">
+                  <a href="tel:030000000" style="color:#fff;font-weight:700;text-decoration:none;">טלפון: 03-0000000</a>
+                  <span>ימים א׳–ה׳ · 9:00–16:00</span>
+                  <span>מענה אנושי מצוות הצעד הבא</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="border-top:1px solid rgba(255,255,255,.12);">
+            <div
+              style="max-width:1200px;margin:0 auto;padding:18px 24px;font-size:14px;color:rgba(255,255,255,.6);line-height:1.5;">
+              © 2026 הצעד הבא · האתר נועד למסירת מידע בלבד ואינו מהווה ייעוץ משפטי או רפואי.</div>
+          </div>
+        </footer>
+      </sc-if>
+
+      <sc-if value="{{ showChrome }}" hint-placeholder-val="{{ true }}">
+        <nav data-bottom-nav aria-label="ניווט ראשי"
+          style="position:fixed;bottom:0;inset-inline:0;background:#3F444B;height:64px;z-index:60;box-shadow:0 -2px 12px rgba(0,0,0,.18);">
+          <button onClick="{{ go.home }}" style="{{ bnav.home }}">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 10.5 12 3l9 7.5" />
+              <path d="M5 9.5V21h14V9.5" />
+            </svg>
+            בית
           </button>
-          <div style="font-size:14px;color:#7A7A7A;font-weight:600;margin-bottom:10px;">שלב {{ stepNum }} מתוך {{ stepTotal }}</div>
-          <h2 style="font-size:24px;color:#0D3D5E;font-weight:800;margin:0 0 8px;line-height:1.25;">{{ step.title }}</h2>
-          <p style="font-size:16px;color:#555;margin:0 0 20px;line-height:1.5;">{{ step.help }}</p>
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;">
-            <sc-for list="{{ stepOptions }}" as="o" hint-placeholder-count="3">
-              <button onClick="{{ o.onClick }}" style="{{ o.guidedStyle }}" style-hover="border-color:#1E7FC3;">
-                <span style="font-size:18px;font-weight:700;color:#0D3D5E;">{{ o.label }}</span>
-                <sc-if value="{{ o.hasDesc }}" hint-placeholder-val="{{ false }}"><span style="font-size:14px;color:#777;line-height:1.4;">{{ o.desc }}</span></sc-if>
-              </button>
-            </sc-for>
-          </div>
-          <div style="margin-top:18px;display:flex;align-items:center;gap:18px;min-height:24px;">
-            <sc-if value="{{ canBack }}" hint-placeholder-val="{{ false }}">
-              <button onClick="{{ wizardBack }}" style="background:none;border:none;color:#165D91;font-size:15px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:5px;padding:0;">
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#165D91" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
-                חזרה
-              </button>
+          <button onClick="{{ go.chat }}" style="{{ bnav.chat }}">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            עוזר
+          </button>
+          <button onClick="{{ go.rights }}" style="{{ bnav.rights }}">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <path d="M14 3v5h5" />
+              <path d="M8 13h8M8 17h5" />
+            </svg>
+            זכויות
+          </button>
+          <button onClick="{{ go.login }}" style="{{ bnav.login }}">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 21a8 8 0 0 1 16 0" />
+            </svg>
+            כניסה
+          </button>
+        </nav>
+      </sc-if>
+
+      <!-- ================= PERSONALIZATION WIZARD ================= -->
+      <sc-if value="{{ wizardOpen }}" hint-placeholder-val="{{ false }}">
+        <div role="dialog" aria-modal="true" aria-label="התאמה אישית של הזכויות" dir="rtl"
+          style="position:fixed;inset:0;z-index:200;background:rgba(13,61,94,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:16px 16px 28px;overflow-y:auto;">
+
+          <sc-if value="{{ isSummary }}" hint-placeholder-val="{{ false }}">
+            <div
+              style="width:100%;max-width:620px;background:#fff;border-radius:22px;box-shadow:0 24px 60px rgba(0,0,0,.3);overflow:hidden;">
+              <div style="position:relative;background:#165D91;padding:30px 30px 26px;color:#fff;">
+                <button onClick="{{ closeLater }}" aria-label="סגירה"
+                  style="position:absolute;top:16px;left:16px;width:38px;height:38px;border:none;background:rgba(255,255,255,.18);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                    stroke-linecap="round">
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                  </svg>
+                </button>
+                <div
+                  style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.16);border-radius:999px;padding:6px 14px;margin-bottom:16px;font-size:14px;font-weight:700;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 12l2 2 4-4" />
+                    <circle cx="12" cy="12" r="9" />
+                  </svg>
+                  ההתאמה האישית הושלמה
+                </div>
+                <div style="font-size:15px;color:rgba(255,255,255,.82);margin-bottom:6px;">הגורם המטפל שלך</div>
+                <h2 style="font-size:clamp(22px,3vw,28px);font-weight:800;margin:0 0 8px;line-height:1.2;">{{
+                  summary.authName }}</h2>
+                <sc-if value="{{ summary.hasProfile }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-size:16px;color:rgba(255,255,255,.88);">{{ summary.profileLine }}</div>
+                </sc-if>
+              </div>
+              <div style="padding:24px 30px 28px;">
+                <sc-if value="{{ summary.hasNote }}" hint-placeholder-val="{{ false }}">
+                  <div
+                    style="background:#EDF5FB;border:1px solid #D6E3EF;border-radius:14px;padding:15px 18px;margin-bottom:20px;font-size:16px;color:#165D91;line-height:1.55;">
+                    {{ summary.note }}</div>
+                </sc-if>
+                <div style="font-size:18px;font-weight:800;color:#0D3D5E;margin:2px 0 14px;">הזכויות שרלוונטיות עבורך
+                </div>
+                <div style="display:flex;flex-direction:column;gap:12px;">
+                  <sc-for list="{{ summary.rights }}" as="r" hint-placeholder-count="3">
+                    <div style="border:1px solid #E4E4E4;border-radius:14px;padding:16px 18px;">
+                      <div style="font-size:17px;font-weight:700;color:#165D91;margin-bottom:10px;">{{ r.h }}</div>
+                      <div style="display:flex;flex-direction:column;gap:8px;">
+                        <sc-for list="{{ r.items }}" as="it" hint-placeholder-count="3">
+                          <div style="display:flex;gap:9px;align-items:flex-start;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E7FC3"
+                              stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"
+                              style="flex:none;margin-top:3px;">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                            <span style="font-size:15px;color:#444;line-height:1.5;">{{ it }}</span>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:10px;margin-top:22px;">
+                  <button onClick="{{ summary.toChat }}"
+                    style="height:54px;border:none;border-radius:27px;background:#F06723;color:#fff;font-size:17px;font-weight:700;cursor:pointer;">שאל/י
+                    את העוזר הדיגיטלי על המצב שלך</button>
+                  <button onClick="{{ summary.toRights }}"
+                    style="height:54px;border:1.5px solid #D6E3EF;border-radius:27px;background:#fff;color:#165D91;font-size:17px;font-weight:700;cursor:pointer;">צפה/י
+                    בכל הזכויות שלי</button>
+                </div>
+                <div style="margin-top:16px;display:flex;gap:20px;justify-content:center;">
+                  <button onClick="{{ editAnswers }}"
+                    style="background:none;border:none;color:#7A7A7A;font-size:15px;font-weight:600;cursor:pointer;">עריכת
+                    התשובות</button>
+                  <button onClick="{{ closeLater }}"
+                    style="background:none;border:none;color:#7A7A7A;font-size:15px;font-weight:600;cursor:pointer;">סגירה</button>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isSteps }}" hint-placeholder-val="{{ true }}">
+
+            <sc-if value="{{ wzStepper }}" hint-placeholder-val="{{ true }}">
+              <div
+                style="position:relative;width:100%;max-width:560px;background:#fff;border-radius:22px;box-shadow:0 24px 60px rgba(0,0,0,.3);padding:30px 30px 24px;">
+                <button onClick="{{ closeLater }}" aria-label="סגירה"
+                  style="position:absolute;top:16px;left:16px;width:38px;height:38px;border:none;background:#F4F4F4;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#7A7A7A;"
+                  style-hover="background:#E9E9E9;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                    stroke-linecap="round">
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                  </svg>
+                </button>
+                <sc-if value="{{ canBack }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ wizardBack }}"
+                    style="position:absolute;top:18px;right:24px;background:none;border:none;color:#165D91;font-size:15px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:5px;padding:0;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#165D91" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M5 12h14" />
+                      <path d="M13 6l6 6-6 6" />
+                    </svg>
+                    חזרה
+                  </button>
+                </sc-if>
+                <div style="display:flex;gap:6px;margin:6px 0 8px;">
+                  <sc-for list="{{ progress }}" as="p" hint-placeholder-count="5"><span
+                      style="{{ p.style }}"></span></sc-for>
+                </div>
+                <div style="font-size:14px;color:#7A7A7A;font-weight:600;margin-bottom:16px;">שלב {{ stepNum }} מתוך {{
+                  stepTotal }}</div>
+                <h2 style="font-size:26px;color:#0D3D5E;font-weight:800;margin:0 0 8px;line-height:1.25;">{{ step.title
+                  }}</h2>
+                <p style="font-size:17px;color:#555;margin:0 0 22px;line-height:1.5;">{{ step.help }}</p>
+                <div style="display:flex;flex-direction:column;gap:12px;">
+                  <sc-for list="{{ stepOptions }}" as="o" hint-placeholder-count="3">
+                    <button onClick="{{ o.onClick }}" style="{{ o.stepperStyle }}"
+                      style-hover="border-color:#1E7FC3;box-shadow:0 6px 18px rgba(13,61,94,.10);">
+                      <span style="{{ o.dotStyle }}"></span>
+                      <span style="display:flex;flex-direction:column;gap:2px;align-items:flex-start;flex:1;">
+                        <span style="font-size:19px;font-weight:700;color:#0D3D5E;">{{ o.label }}</span>
+                        <sc-if value="{{ o.hasDesc }}" hint-placeholder-val="{{ false }}"><span
+                            style="font-size:15px;color:#777;">{{ o.desc }}</span></sc-if>
+                      </span>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E7FC3" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" style="flex:none;">
+                        <path d="M15 6l-6 6 6 6" />
+                      </svg>
+                    </button>
+                  </sc-for>
+                </div>
+                <sc-if value="{{ step.skippable }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ skipStep }}"
+                    style="width:100%;margin-top:14px;background:none;border:none;color:#7A7A7A;font-size:15px;font-weight:600;cursor:pointer;padding:6px;">דלג/י
+                    על שאלה זו</button>
+                </sc-if>
+                <div style="margin-top:16px;border-top:1px solid #EEE;padding-top:14px;text-align:center;">
+                  <button onClick="{{ closeLater }}"
+                    style="background:none;border:none;color:#7A7A7A;font-size:15px;font-weight:600;cursor:pointer;">אעשה
+                    זאת מאוחר יותר</button>
+                </div>
+              </div>
             </sc-if>
-            <sc-if value="{{ step.skippable }}" hint-placeholder-val="{{ false }}">
-              <button onClick="{{ skipStep }}" style="background:none;border:none;color:#7A7A7A;font-size:15px;font-weight:600;cursor:pointer;padding:0;">דלג/י</button>
+
+            <sc-if value="{{ wzChat }}" hint-placeholder-val="{{ false }}">
+              <div
+                style="position:relative;width:100%;max-width:540px;background:#fff;border-radius:22px;box-shadow:0 24px 60px rgba(0,0,0,.3);overflow:hidden;">
+                <div style="height:4px;background:#EDF5FB;">
+                  <div style="{{ chatBarStyle }}"></div>
+                </div>
+                <div style="padding:22px 26px 24px;">
+                  <button onClick="{{ closeLater }}" aria-label="סגירה"
+                    style="position:absolute;top:18px;left:16px;width:36px;height:36px;border:none;background:#F4F4F4;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#7A7A7A;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                      stroke-linecap="round">
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                    </svg>
+                  </button>
+                  <sc-if value="{{ hasChips }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;padding-left:42px;">
+                      <sc-for list="{{ chips }}" as="c" hint-placeholder-count="2">
+                        <button onClick="{{ c.onClick }}"
+                          style="display:inline-flex;align-items:center;gap:5px;background:#EDF5FB;border:1px solid #D6E3EF;color:#165D91;font-size:14px;font-weight:600;padding:6px 12px;border-radius:16px;cursor:pointer;">
+                          {{ c.text }}
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#165D91" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 20h9" />
+                            <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                          </svg>
+                        </button>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                  <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:18px;">
+                    <span
+                      style="width:44px;height:44px;border-radius:50%;background:#165D91;display:flex;align-items:center;justify-content:center;flex:none;">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                      </svg>
+                    </span>
+                    <div style="background:#F4F4F4;border-radius:16px 16px 16px 4px;padding:15px 19px;flex:1;">
+                      <div style="font-size:20px;font-weight:700;color:#0D3D5E;margin-bottom:4px;line-height:1.3;">{{
+                        step.title }}</div>
+                      <div style="font-size:16px;color:#555;line-height:1.5;">{{ step.help }}</div>
+                    </div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:10px;">
+                    <sc-for list="{{ stepOptions }}" as="o" hint-placeholder-count="3">
+                      <button onClick="{{ o.onClick }}" style="{{ o.chatStyle }}" style-hover="border-color:#F06723;">
+                        <span>{{ o.label }}</span>
+                        <sc-if value="{{ o.hasDesc }}" hint-placeholder-val="{{ false }}"><span
+                            style="font-size:14px;font-weight:500;opacity:.85;">· {{ o.desc }}</span></sc-if>
+                      </button>
+                    </sc-for>
+                  </div>
+                  <div
+                    style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;min-height:24px;">
+                    <sc-if value="{{ canBack }}" hint-placeholder-val="{{ false }}">
+                      <button onClick="{{ wizardBack }}"
+                        style="background:none;border:none;color:#165D91;font-size:15px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:5px;padding:0;">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#165D91" stroke-width="2"
+                          stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M5 12h14" />
+                          <path d="M13 6l6 6-6 6" />
+                        </svg>
+                        חזרה
+                      </button>
+                    </sc-if>
+                    <sc-if value="{{ step.skippable }}" hint-placeholder-val="{{ false }}">
+                      <button onClick="{{ skipStep }}"
+                        style="margin-inline-start:auto;background:none;border:none;color:#7A7A7A;font-size:15px;font-weight:600;cursor:pointer;padding:0;">לא
+                        עכשיו</button>
+                    </sc-if>
+                  </div>
+                  <div style="margin-top:14px;border-top:1px solid #EEE;padding-top:13px;text-align:center;">
+                    <button onClick="{{ closeLater }}"
+                      style="background:none;border:none;color:#7A7A7A;font-size:15px;font-weight:600;cursor:pointer;">אעשה
+                      זאת מאוחר יותר</button>
+                  </div>
+                </div>
+              </div>
             </sc-if>
-            <button onClick="{{ closeLater }}" style="margin-inline-start:auto;background:none;border:none;color:#7A7A7A;font-size:15px;font-weight:600;cursor:pointer;padding:0;">מאוחר יותר</button>
-          </div>
+
+            <sc-if value="{{ wzGuided }}" hint-placeholder-val="{{ false }}">
+              <div
+                style="width:100%;max-width:780px;background:#fff;border-radius:22px;box-shadow:0 24px 60px rgba(0,0,0,.3);overflow:hidden;">
+                <div style="display:flex;flex-wrap:wrap;">
+                  <div style="flex:1 1 220px;background:#0D3D5E;color:#fff;padding:26px 22px;min-width:200px;">
+                    <div
+                      style="font-size:13px;color:rgba(255,255,255,.6);font-weight:700;letter-spacing:.02em;margin-bottom:16px;">
+                      ההתאמה האישית שלך</div>
+                    <div style="display:flex;flex-direction:column;gap:2px;">
+                      <sc-for list="{{ checklist }}" as="c" hint-placeholder-count="5">
+                        <button onClick="{{ c.onClick }}" style="{{ c.rowStyle }}">
+                          <span style="{{ c.numStyle }}">{{ c.num }}</span>
+                          <span
+                            style="display:flex;flex-direction:column;align-items:flex-start;gap:1px;flex:1;min-width:0;">
+                            <span style="font-size:15px;font-weight:600;color:#fff;">{{ c.label }}</span>
+                            <sc-if value="{{ c.hasValue }}" hint-placeholder-val="{{ false }}"><span
+                                style="font-size:13px;color:#9FC4E0;">{{ c.value }}</span></sc-if>
+                          </span>
+                        </button>
+                      </sc-for>
+                    </div>
+                    <div style="margin-top:22px;border-top:1px solid rgba(255,255,255,.15);padding-top:16px;">
+                      <div style="font-size:13px;color:rgba(255,255,255,.6);margin-bottom:6px;">הגורם המטפל</div>
+                      <div style="font-size:16px;font-weight:700;color:#fff;line-height:1.35;">{{ liveAuthorityText }}
+                      </div>
+                    </div>
+                  </div>
+                  <div style="flex:2 1 360px;padding:28px 30px 24px;position:relative;min-width:280px;">
+                    <button onClick="{{ closeLater }}" aria-label="סגירה"
+                      style="position:absolute;top:16px;left:16px;width:36px;height:36px;border:none;background:#F4F4F4;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#7A7A7A;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.2" stroke-linecap="round">
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                      </svg>
+                    </button>
+                    <div style="font-size:14px;color:#7A7A7A;font-weight:600;margin-bottom:10px;">שלב {{ stepNum }} מתוך
+                      {{ stepTotal }}</div>
+                    <h2 style="font-size:24px;color:#0D3D5E;font-weight:800;margin:0 0 8px;line-height:1.25;">{{
+                      step.title }}</h2>
+                    <p style="font-size:16px;color:#555;margin:0 0 20px;line-height:1.5;">{{ step.help }}</p>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;">
+                      <sc-for list="{{ stepOptions }}" as="o" hint-placeholder-count="3">
+                        <button onClick="{{ o.onClick }}" style="{{ o.guidedStyle }}"
+                          style-hover="border-color:#1E7FC3;">
+                          <span style="font-size:18px;font-weight:700;color:#0D3D5E;">{{ o.label }}</span>
+                          <sc-if value="{{ o.hasDesc }}" hint-placeholder-val="{{ false }}"><span
+                              style="font-size:14px;color:#777;line-height:1.4;">{{ o.desc }}</span></sc-if>
+                        </button>
+                      </sc-for>
+                    </div>
+                    <div style="margin-top:18px;display:flex;align-items:center;gap:18px;min-height:24px;">
+                      <sc-if value="{{ canBack }}" hint-placeholder-val="{{ false }}">
+                        <button onClick="{{ wizardBack }}"
+                          style="background:none;border:none;color:#165D91;font-size:15px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:5px;padding:0;">
+                          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#165D91" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14" />
+                            <path d="M13 6l6 6-6 6" />
+                          </svg>
+                          חזרה
+                        </button>
+                      </sc-if>
+                      <sc-if value="{{ step.skippable }}" hint-placeholder-val="{{ false }}">
+                        <button onClick="{{ skipStep }}"
+                          style="background:none;border:none;color:#7A7A7A;font-size:15px;font-weight:600;cursor:pointer;padding:0;">דלג/י</button>
+                      </sc-if>
+                      <button onClick="{{ closeLater }}"
+                        style="margin-inline-start:auto;background:none;border:none;color:#7A7A7A;font-size:15px;font-weight:600;cursor:pointer;padding:0;">מאוחר
+                        יותר</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+
+          </sc-if>
+
         </div>
-      </div>
+      </sc-if>
+
     </div>
-    </sc-if>
-
-    </sc-if>
-
-  </div>
-  </sc-if>
-
-</div>
-</x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:860},&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;home&quot;,&quot;chat&quot;,&quot;rights&quot;,&quot;login&quot;,&quot;signup&quot;],&quot;default&quot;:&quot;home&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;showDisclaimer&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;wizardStyle&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;stepper&quot;,&quot;chat&quot;,&quot;guided&quot;],&quot;default&quot;:&quot;stepper&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+  </x-dc>
+  <script type="text/x-dc" data-dc-script
+    data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:860},&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;home&quot;,&quot;chat&quot;,&quot;rights&quot;,&quot;login&quot;,&quot;signup&quot;],&quot;default&quot;:&quot;home&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;showDisclaimer&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;wizardStyle&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;stepper&quot;,&quot;chat&quot;,&quot;guided&quot;],&quot;default&quot;:&quot;stepper&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
 class Component extends DCLogic {
   state = {
     screen: 'home',
@@ -788,7 +1387,7 @@ class Component extends DCLogic {
     ],
   };
 
-  amputationTypes = ['רגל — מעל הברך', 'רגל — מתחת לברך', 'יד — מעל המרפק', 'יד — מתחת למרפק', 'כף רגל', 'כף יד', 'קטיעה מרובת גפיים', 'אחר', 'מעדיף/ה לא לפרט'];
+  amputationTypes = ['רגל - מעל הברך', 'רגל - מתחת לברך', 'יד - מעל המרפק', 'יד - מתחת למרפק', 'כף רגל', 'כף יד', 'קטיעה מרובת גפיים', 'אחר', 'מעדיף/ה לא לפרט'];
 
   causeIds = ['medical', 'work', 'road', 'military'];
   quickIds = ['medrights', 'financial', 'mobility'];
@@ -796,7 +1395,7 @@ class Component extends DCLogic {
   topics = {
     medical: {
       id: 'medical', tag: 'מחלה · סוכרת · כלי דם', title: 'קטיעה על רקע רפואי',
-      lead: 'קטיעה שמקורה במחלה — למשל סוכרת, מחלת כלי דם, גידול או זיהום.',
+      lead: 'קטיעה שמקורה במחלה - למשל סוכרת, מחלת כלי דם, גידול או זיהום.',
       body: 'משרד הבריאות וקופת החולים',
       chatIntro: 'קטיעה על רקע רפואי מטופלת מול קופת החולים ומשרד הבריאות. מגיעים לך פרוטזה ומכשירי שיקום, טיפולי שיקום והחזרים כספיים. רוצה שאסביר איך מגישים בקשה למימון פרוטזה?',
       sections: [
@@ -808,7 +1407,7 @@ class Component extends DCLogic {
     work: {
       id: 'work', tag: 'נפגעי עבודה', title: 'קטיעה בעקבות תאונת עבודה',
       lead: 'קטיעה שאירעה כתוצאה מתאונת עבודה או מחלת מקצוע.',
-      body: 'המוסד לביטוח לאומי — נפגעי עבודה',
+      body: 'המוסד לביטוח לאומי - נפגעי עבודה',
       chatIntro: 'קטיעה בעקבות תאונת עבודה מטופלת מול המוסד לביטוח לאומי. ייתכן ומגיעים לך דמי פגיעה, קצבת נכות מעבודה ומענק. רוצה לדעת איך מגישים תביעה לנפגע עבודה?',
       sections: [
         { h: 'מה מגיע לך', items: ['דמי פגיעה לתקופת אי-הכושר', 'קצבת נכות מעבודה או מענק נכות', 'החזר הוצאות רפואיות ושיקום', 'שיקום מקצועי וחזרה לעבודה'] },
@@ -820,7 +1419,7 @@ class Component extends DCLogic {
       id: 'road', tag: 'נפגעי תאונות דרכים', title: 'קטיעה בעקבות תאונת דרכים',
       lead: 'קטיעה כתוצאה מתאונת דרכים, לפי חוק הפיצויים לנפגעי תאונות דרכים (הפלת״ד), תשל״ה-1975.',
       body: 'חברת הביטוח של הרכב · קרנית',
-      chatIntro: 'בקטיעה בעקבות תאונת דרכים הזכויות מוסדרות בחוק הפלת״ד, והפנייה היא לחברת הביטוח. מגיע פיצוי על נזק גוף, מימון טיפולים ופרוטזות. כדאי לשקול ייעוץ משפטי — רוצה שאסביר על השלבים?',
+      chatIntro: 'בקטיעה בעקבות תאונת דרכים הזכויות מוסדרות בחוק הפלת״ד, והפנייה היא לחברת הביטוח. מגיע פיצוי על נזק גוף, מימון טיפולים ופרוטזות. כדאי לשקול ייעוץ משפטי - רוצה שאסביר על השלבים?',
       sections: [
         { h: 'מה מגיע לך', items: ['פיצוי על נזק גוף לפי חוק הפלת״ד', 'מימון טיפולים, פרוטזות ושיקום', 'פיצוי על הפסד השתכרות', 'עזרת צד שלישי וסיוע סיעודי'] },
         { h: 'איך מתחילים', items: ['פתיחת תביעה מול חברת הביטוח של הרכב', 'מינוי מומחים רפואיים להערכת הנזק', 'שקילת ליווי משפטי'] },
@@ -830,7 +1429,7 @@ class Component extends DCLogic {
     military: {
       id: 'military', tag: 'נכי צה״ל ונפגעי איבה', title: 'קטיעה בעקבות שירות צבאי / פעולת איבה',
       lead: 'קטיעה שאירעה במהלך שירות צה״ל או המשטרה, או בעקבות פעולת איבה.',
-      body: 'משרד הביטחון — אגף השיקום · הרשות לנפגעי פעולות איבה',
+      body: 'משרד הביטחון - אגף השיקום · הרשות לנפגעי פעולות איבה',
       chatIntro: 'נכי צה״ל ונפגעי פעולות איבה מטופלים באגף השיקום במשרד הביטחון. מגיעים תגמולים חודשיים, מימון פרוטזות מתקדמות וסיוע בדיור וברכב. רוצה לדעת איך מגישים בקשה להכרה?',
       sections: [
         { h: 'מה מגיע לך', items: ['הכרה כנכה צה״ל / נפגע פעולת איבה', 'תגמולים חודשיים לפי דרגת הנכות', 'מימון פרוטזות מתקדמות ומכשור', 'סיוע בדיור, ברכב ובהתאמות', 'ליווי שיקומי אישי'] },
@@ -842,7 +1441,7 @@ class Component extends DCLogic {
       id: 'medrights', tag: 'פרוטזות · טיפולים', title: 'זכויות רפואיות',
       lead: 'כל מה שקשור לפרוטזה, מכשירי שיקום וטיפולים רפואיים.',
       body: 'קופת החולים · משרד הבריאות',
-      chatIntro: 'בתחום הרפואי מגיעים לך פרוטזות ומכשור, טיפולי שיקום והחזרים כספיים. על מה תרצה לשמוע — פרוטזות, טיפולים או החזרים?',
+      chatIntro: 'בתחום הרפואי מגיעים לך פרוטזות ומכשור, טיפולי שיקום והחזרים כספיים. על מה תרצה לשמוע - פרוטזות, טיפולים או החזרים?',
       sections: [
         { h: 'פרוטזות ומכשור', items: ['התאמה אישית של פרוטזה', 'החלפה ותיקונים לאורך זמן', 'מכשירי עזר וניידות'] },
         { h: 'טיפולים', items: ['פיזיותרפיה וריפוי בעיסוק', 'טיפול בכאב פנטום', 'ליווי פסיכולוגי ושיקומי'] },
@@ -864,7 +1463,7 @@ class Component extends DCLogic {
       id: 'mobility', tag: 'תו נכה · רכב · דיור', title: 'ניידות ונגישות',
       lead: 'תו נכה, רכב, נגישות והתאמות דיור.',
       body: 'משרד התחבורה · ביטוח לאומי',
-      chatIntro: 'בתחום הניידות מגיעים תו חניית נכה, קצבת ניידות וסיוע ברכב, וכן התאמות נגישות בבית. מה רלוונטי לך — תו נכה, רכב או התאמות דיור?',
+      chatIntro: 'בתחום הניידות מגיעים תו חניית נכה, קצבת ניידות וסיוע ברכב, וכן התאמות נגישות בבית. מה רלוונטי לך - תו נכה, רכב או התאמות דיור?',
       sections: [
         { h: 'ניידות', items: ['קצבת ניידות', 'מימון או הלוואה לרכב', 'תו חניית נכה'] },
         { h: 'נגישות בבית', items: ['התאמת דיור והתקנת מעקים', 'התאמות נגישות בבית'] },
@@ -875,7 +1474,7 @@ class Component extends DCLogic {
 
   answersList = [
     { q: 'מהי דרגת הנכות שמגיעה לי?', a: 'דרגת הנכות נקבעת בוועדה רפואית לפי סוג הקטיעה ומיקומה. ככלל, קטיעת גפה מזכה באחוזי נכות משמעותיים, אך השיעור המדויק תלוי בגובה הקטיעה וברמת התפקוד. כדאי להגיע לוועדה עם סיכום רפואי מעודכן. רוצה שאסביר איך מתכוננים לוועדה?' },
-    { q: 'איך מגישים בקשה לפרוטזה?', a: 'הבקשה מוגשת דרך הגורם המטפל בך — קופת החולים ומשרד הבריאות (קטיעה רפואית), ביטוח לאומי (תאונת עבודה) או אגף השיקום (נכי צה״ל ונפגעי איבה). בדרך כלל צריך הפניה רפואית והערכת מומחה שיקום. איזה מהמצבים מתאים לך?' },
+    { q: 'איך מגישים בקשה לפרוטזה?', a: 'הבקשה מוגשת דרך הגורם המטפל בך - קופת החולים ומשרד הבריאות (קטיעה רפואית), ביטוח לאומי (תאונת עבודה) או אגף השיקום (נכי צה״ל ונפגעי איבה). בדרך כלל צריך הפניה רפואית והערכת מומחה שיקום. איזה מהמצבים מתאים לך?' },
     { q: 'אילו קצבאות מגיעות לי מביטוח לאומי?', a: 'בהתאם למצב ייתכן ותהיה זכאות לקצבת נכות כללית, קצבת נכות מעבודה, קצבת ניידות ומענקים. הזכאות נקבעת לפי אחוזי הנכות וההכנסה. רוצה שאעזור לבדוק אילו קצבאות רלוונטיות למצב שלך?' },
     { q: 'איך מקבלים תו חניית נכה?', a: 'תו נכה מונפק על ידי משרד התחבורה. מגישים בקשה מקוונת בצירוף מסמכים רפואיים המעידים על מגבלת הניידות. לבעלי קטיעת גפה תחתונה לרוב קיימת זכאות. רוצה הסבר שלב-אחר-שלב?' },
     { q: 'מה ההבדל בין נכות מעבודה לנכות כללית?', a: 'נכות מעבודה מוכרת כשהפגיעה נגרמה בעבודה או בדרך אליה, ומזכה בתגמולים ייעודיים. נכות כללית רלוונטית כשהקטיעה אינה קשורה לעבודה. ההכרה משפיעה על סוג וגובה הקצבאות. רוצה לדעת לאיזה מסלול אתה שייך?' },
@@ -951,7 +1550,7 @@ class Component extends DCLogic {
     const t = (text || '').trim();
     const hit = this.answersList.find(x => x.q === t);
     if (hit) return hit.a;
-    return 'תודה על השאלה. כדי לתת לך תשובה מדויקת חשוב לדעת באילו נסיבות אירעה הקטיעה — רפואית, תאונת עבודה, תאונת דרכים או שירות צבאי / פעולת איבה. אפשר לבחור נושא מהרשימה ואכוון אותך לזכויות ולגורם המטפל הנכון. (זהו אזור הדגמה — בגרסה המלאה העוזר מבוסס על מאגר הזכויות המעודכן.)';
+    return 'תודה על השאלה. כדי לתת לך תשובה מדויקת חשוב לדעת באילו נסיבות אירעה הקטיעה - רפואית, תאונת עבודה, תאונת דרכים או שירות צבאי / פעולת איבה. אפשר לבחור נושא מהרשימה ואכוון אותך לזכויות ולגורם המטפל הנכון. (זהו אזור הדגמה - בגרסה המלאה העוזר מבוסס על מאגר הזכויות המעודכן.)';
   }
 
   send = (text) => {
@@ -1001,15 +1600,15 @@ class Component extends DCLogic {
   wzDef(stepId) {
     const a = this.state.wz;
     switch (stepId) {
-      case 'limb': return { title: 'איזו גפה נקטעה?', help: 'נתחיל מהבסיס — זה יקבע את שאר השאלות.', options: [
+      case 'limb': return { title: 'איזו גפה נקטעה?', help: 'נתחיל מהבסיס - זה יקבע את שאר השאלות.', options: [
         { key: 'leg', label: 'רגל', desc: 'קטיעה של גפה תחתונה' },
         { key: 'hand', label: 'יד', desc: 'קטיעה של גפה עליונה' },
         { key: 'multi', label: 'כמה גפיים', desc: 'קטיעה מרובת גפיים' } ] };
       case 'level': return a.limb === 'hand'
-        ? { title: 'מה גובה הקטיעה?', help: 'ביחס למרפק — זה משפיע על התפקוד ועל סוג הפרוטזה.', options: [ { key: 'aboveElbow', label: 'מעל המרפק' }, { key: 'belowElbow', label: 'מתחת למרפק' } ] }
-        : { title: 'מה גובה הקטיעה?', help: 'ביחס לברך — זה משפיע על התפקוד ועל סוג הפרוטזה.', options: [ { key: 'aboveKnee', label: 'מעל הברך' }, { key: 'belowKnee', label: 'מתחת לברך' } ] };
+        ? { title: 'מה גובה הקטיעה?', help: 'ביחס למרפק - זה משפיע על התפקוד ועל סוג הפרוטזה.', options: [ { key: 'aboveElbow', label: 'מעל המרפק' }, { key: 'belowElbow', label: 'מתחת למרפק' } ] }
+        : { title: 'מה גובה הקטיעה?', help: 'ביחס לברך - זה משפיע על התפקוד ועל סוג הפרוטזה.', options: [ { key: 'aboveKnee', label: 'מעל הברך' }, { key: 'belowKnee', label: 'מתחת לברך' } ] };
       case 'cause': return { title: 'מה הרקע לקטיעה?', help: 'זהו הפרט שקובע מי הגורם המטפל ומה מגיע לך. אפשר לדלג אם לא נוח לפרט.', skippable: true, options: [
-        { key: 'military', label: 'שירות צבאי / פעולת איבה', desc: 'משרד הביטחון — אגף השיקום' },
+        { key: 'military', label: 'שירות צבאי / פעולת איבה', desc: 'משרד הביטחון - אגף השיקום' },
         { key: 'medical', label: 'רקע רפואי', desc: 'קופת החולים ומשרד הבריאות' },
         { key: 'work', label: 'תאונת עבודה', desc: 'המוסד לביטוח לאומי' },
         { key: 'road', label: 'תאונת דרכים', desc: 'חברת הביטוח (חוק הפלת״ד)' } ] };
@@ -1030,7 +1629,7 @@ class Component extends DCLogic {
 
   authorityFor(cause) {
     const m = {
-      military: { name: 'משרד הביטחון — אגף השיקום', topic: 'military' },
+      military: { name: 'משרד הביטחון - אגף השיקום', topic: 'military' },
       medical: { name: 'קופת החולים ומשרד הבריאות', topic: 'medical' },
       work: { name: 'המוסד לביטוח לאומי', topic: 'work' },
       road: { name: 'חברת הביטוח של הרכב (חוק הפלת״ד)', topic: 'road' },
@@ -1250,4 +1849,5 @@ class Component extends DCLogic {
 }
 </script>
 </body>
+
 </html>

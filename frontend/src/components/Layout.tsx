@@ -1,17 +1,18 @@
 import type { JSX } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { colors, maxWidth } from '../theme';
-import { ChatIcon, FileIcon, HomeIcon, UserIcon } from './icons';
+import { ChatIcon, FileIcon, HomeIcon, TrackerIcon, UserIcon } from './icons';
 import { Logo } from './Logo';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../api/supabase';
 
-type Section = 'home' | 'chat' | 'rights' | 'other';
+type Section = 'home' | 'chat' | 'rights' | 'tracker' | 'other';
 
 function sectionFor(pathname: string): Section {
   if (pathname === '/') return 'home';
   if (pathname.startsWith('/chat')) return 'chat';
   if (pathname.startsWith('/rights')) return 'rights';
+  if (pathname.startsWith('/tracker')) return 'tracker';
   return 'other';
 }
 
@@ -70,21 +71,26 @@ function Header(): JSX.Element {
       >
         <button
           onClick={() => navigate('/')}
-          aria-label="הצעד הבא — לדף הבית"
+          aria-label="הצעד הבא - לדף הבית"
           style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
         >
           <Logo height={44} onDark />
         </button>
-        <nav className="desktop-nav" style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-          <button onClick={() => navigate('/')} style={navButtonStyle(section === 'home')}>
+        <nav className="desktop-nav" aria-label="ניווט ראשי" style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          <button onClick={() => navigate('/')} aria-current={section === 'home' ? 'page' : undefined} style={navButtonStyle(section === 'home')}>
             בית
           </button>
-          <button onClick={() => navigate('/chat')} style={navButtonStyle(section === 'chat')}>
+          <button onClick={() => navigate('/chat')} aria-current={section === 'chat' ? 'page' : undefined} style={navButtonStyle(section === 'chat')}>
             העוזר הדיגיטלי
           </button>
-          <button onClick={() => navigate('/rights')} style={navButtonStyle(section === 'rights')}>
+          <button onClick={() => navigate('/rights')} aria-current={section === 'rights' ? 'page' : undefined} style={navButtonStyle(section === 'rights')}>
             הזכויות שלי
           </button>
+          {session ? (
+            <button onClick={() => navigate('/tracker')} aria-current={section === 'tracker' ? 'page' : undefined} style={navButtonStyle(section === 'tracker')}>
+              המעקב שלי
+            </button>
+          ) : null}
         </nav>
         <div
           className="app-header-auth"
@@ -111,17 +117,17 @@ function Header(): JSX.Element {
               ) : null}
               <button
                 onClick={() => supabase.auth.signOut()}
-              style={{
-                height: 44,
-                padding: '0 22px',
-                borderRadius: 22,
-                border: '1.5px solid rgba(255,255,255,.6)',
-                background: 'transparent',
-                color: colors.white,
-                fontSize: 16,
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
+                style={{
+                  height: 44,
+                  padding: '0 22px',
+                  borderRadius: 22,
+                  border: '1.5px solid rgba(255,255,255,.6)',
+                  background: 'transparent',
+                  color: colors.white,
+                  fontSize: 16,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
               >
                 התנתקות
               </button>
@@ -171,6 +177,7 @@ function Header(): JSX.Element {
 
 function Footer(): JSX.Element {
   const navigate = useNavigate();
+  const { session } = useAuth();
   const linkStyle: React.CSSProperties = {
     background: 'none',
     border: 'none',
@@ -198,14 +205,14 @@ function Footer(): JSX.Element {
             <Logo height={46} onDark />
           </div>
           <p style={{ fontSize: 16, lineHeight: 1.6, margin: 0, color: 'rgba(255,255,255,.78)' }}>
-            הבית של קטועי הגפיים בישראל — כדי שכל אחד יוכל להבין את הזכויות שלו ולממש אותן בקלות.
+            הבית של קטועי הגפיים בישראל - כדי שכל אחד יוכל להבין את הזכויות שלו ולממש אותן בקלות.
           </p>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 48 }}>
-          <div>
-            <div style={{ fontSize: 17, fontWeight: 700, color: colors.white, marginBottom: 12 }}>
+          <nav aria-label="ניווט תחתון">
+            <h3 style={{ fontSize: 17, fontWeight: 700, color: colors.white, marginBottom: 12, marginTop: 0 }}>
               ניווט
-            </div>
+            </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <button onClick={() => navigate('/')} style={linkStyle}>
                 בית
@@ -216,12 +223,17 @@ function Footer(): JSX.Element {
               <button onClick={() => navigate('/rights')} style={linkStyle}>
                 הזכויות שלי
               </button>
+              {session ? (
+                <button onClick={() => navigate('/tracker')} style={linkStyle}>
+                  המעקב שלי
+                </button>
+              ) : null}
             </div>
-          </div>
+          </nav>
           <div>
-            <div style={{ fontSize: 17, fontWeight: 700, color: colors.white, marginBottom: 12 }}>
+            <h3 style={{ fontSize: 17, fontWeight: 700, color: colors.white, marginBottom: 12, marginTop: 0 }}>
               צריך/ה עזרה?
-            </div>
+            </h3>
             <div
               style={{
                 display: 'flex',
@@ -231,12 +243,9 @@ function Footer(): JSX.Element {
                 color: 'rgba(255,255,255,.82)',
               }}
             >
-              <a
-                href="tel:1700554700"
-                style={{ color: colors.white, fontWeight: 700, textDecoration: 'none' }}
-              >
-                טלפון: 1-700-554-700
-              </a>
+
+              טלפון: 1-700-554-700
+
               <span>ימים א׳–ה׳ · 9:00–16:00</span>
               <span>מענה אנושי מצוות הצעד הבא</span>
             </div>
@@ -279,18 +288,24 @@ function BottomNav(): JSX.Element {
         boxShadow: '0 -2px 12px rgba(0,0,0,.18)',
       }}
     >
-      <button onClick={() => navigate('/')} style={bottomNavStyle(section === 'home')}>
+      <button onClick={() => navigate('/')} aria-current={section === 'home' ? 'page' : undefined} style={bottomNavStyle(section === 'home')}>
         <HomeIcon size={24} />
         בית
       </button>
-      <button onClick={() => navigate('/chat')} style={bottomNavStyle(section === 'chat')}>
+      <button onClick={() => navigate('/chat')} aria-current={section === 'chat' ? 'page' : undefined} style={bottomNavStyle(section === 'chat')}>
         <ChatIcon size={24} />
         עוזר
       </button>
-      <button onClick={() => navigate('/rights')} style={bottomNavStyle(section === 'rights')}>
+      <button onClick={() => navigate('/rights')} aria-current={section === 'rights' ? 'page' : undefined} style={bottomNavStyle(section === 'rights')}>
         <FileIcon size={24} />
         זכויות
       </button>
+      {session ? (
+        <button onClick={() => navigate('/tracker')} aria-current={section === 'tracker' ? 'page' : undefined} style={bottomNavStyle(section === 'tracker')}>
+          <TrackerIcon size={24} />
+          מעקב
+        </button>
+      ) : null}
       {session ? (
         <button onClick={() => supabase.auth.signOut()} style={bottomNavStyle(false)}>
           <UserIcon size={24} />
@@ -313,7 +328,7 @@ function BottomNav(): JSX.Element {
  */
 export function Layout(): JSX.Element {
   const section = sectionFor(useLocation().pathname);
-  const showFooter = section === 'home' || section === 'rights';
+  const showFooter = section === 'home' || section === 'rights' || section === 'tracker';
   return (
     <div
       dir="rtl"

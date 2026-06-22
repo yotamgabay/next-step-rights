@@ -1,4 +1,4 @@
-# הצעד הבא — Next Step Rights
+# הצעד הבא - Next Step Rights
 
 A right-to-left (Hebrew) rights portal for limb amputees in Israel. The site helps
 users understand which rights they are entitled to and which authority handles
@@ -11,9 +11,9 @@ service.
 
 ## Stack
 
-- **Frontend** — Vite + React 18 + **strict TypeScript** (no `any`), `zod` for validation, `react-router-dom` for routing.
-- **Backend** — Node + Express + TypeScript, `zod`-validated requests.
-- **Database & Auth** — Supabase (PostgreSQL). Uses real authentication (Email + Google SSO) via `@supabase/supabase-js`.
+- **Frontend** - Vite + React 18 + **strict TypeScript** (no `any`), `zod` for validation, `react-router-dom` for routing.
+- **Backend** - Node + Express + TypeScript, `zod`-validated requests.
+- **Database & Auth** - Supabase (PostgreSQL). Uses real authentication (Email + Google SSO) via `@supabase/supabase-js`.
 - npm workspaces monorepo.
 
 ## Layout
@@ -28,7 +28,7 @@ service.
 │       ├── hooks/            # useChat, useAuth
 │       ├── pages/            # Home, Chat, Rights, Detail, Login, Signup
 │       ├── schemas/          # zod schemas (forms + API DTOs)
-│       ├── wizard/           # personalization wizard — also the onboarding (context + logic + UI)
+│       ├── wizard/           # personalization wizard - also the onboarding (context + logic + UI)
 │       ├── theme.ts          # design tokens
 │       └── types.ts          # domain types
 ├── backend/                  # Express API
@@ -67,10 +67,10 @@ npm run build               # production build for both
 
 | Method | Path                     | Body                                                    | Notes                        |
 | ------ | ------------------------ | ------------------------------------------------------- | ---------------------------- |
-| GET    | `/api/health`            | —                                                       | liveness                     |
+| GET    | `/api/health`            | -                                                       | liveness                     |
 | POST   | `/api/chat`              | `{ message }`                                           | returns `{ reply, matched }` |
-| GET    | `/api/rights/topics`     | —                                                       | full catalogue + groupings   |
-| GET    | `/api/rights/topics/:id` | —                                                       | a single topic               |
+| GET    | `/api/rights/topics`     | -                                                       | full catalogue + groupings   |
+| GET    | `/api/rights/topics/:id` | -                                                       | a single topic               |
 
 ## Notes / intentional scope
 

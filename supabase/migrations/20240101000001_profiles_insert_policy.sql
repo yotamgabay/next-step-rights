@@ -4,7 +4,7 @@
 -- The initial migration created SELECT and UPDATE policies on public.profiles
 -- but no INSERT policy. The onboarding screen (CompleteProfile) saves via
 -- upsert(), and Postgres upsert (INSERT ... ON CONFLICT) requires INSERT
--- permission — without an INSERT policy RLS rejects the whole statement, the
+-- permission - without an INSERT policy RLS rejects the whole statement, the
 -- profile never saves, and the app keeps redirecting the user back to
 -- /complete-profile.
 --

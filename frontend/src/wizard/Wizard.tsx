@@ -96,7 +96,7 @@ function OptionRow({ option, selected, showChevron, onClick }: OptionRowProps): 
       </span>
       <span style={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'flex-start', flex: 1 }}>
         <span style={{ fontSize: 19, fontWeight: 700, color: colors.darkBlue }}>{option.label}</span>
-        {option.desc ? <span style={{ fontSize: 15, color: colors.textFaint }}>{option.desc}</span> : null}
+        {option.desc ? <span style={{ fontSize: 15, color: '#777' }}>{option.desc}</span> : null}
       </span>
       {showChevron ? <ChevronLeftIcon size={20} color={colors.primaryBlue} style={{ flex: 'none' }} /> : null}
     </button>
@@ -139,7 +139,6 @@ function StepBody({ step }: { step: StepDef }): JSX.Element {
           dir="ltr"
           value={singleValue(answers, step.id)}
           onChange={(e) => wizard.setNumber(step.id, e.target.value)}
-          placeholder="לדוגמה: 50"
           style={{
             width: '100%',
             height: 56,

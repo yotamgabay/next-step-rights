@@ -58,22 +58,20 @@ export function Login(): JSX.Element {
             ltr
             value={values.email}
             onChange={set('email')}
-            placeholder="name@email.com"
             error={errors.email}
           />
           <PasswordField
             label="סיסמה"
             value={values.password}
             onChange={set('password')}
-            placeholder="הקלד/י סיסמה"
             error={errors.password}
           />
         </div>
 
         <div style={{ textAlign: 'left', margin: '14px 0 22px' }}>
-          <a href="#" style={{ fontSize: 15, color: colors.headerBlue, fontWeight: 600, textDecoration: 'none' }}>
+          <button onClick={(e) => { e.preventDefault(); navigate('/forgot-password'); }} style={{ fontSize: 15, color: colors.headerBlue, fontWeight: 600, textDecoration: 'none' }}>
             שכחת סיסמה?
-          </a>
+          </button>
         </div>
 
         <PrimaryButton onClick={submit} busy={busy}>

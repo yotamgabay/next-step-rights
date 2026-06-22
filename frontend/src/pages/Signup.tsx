@@ -66,7 +66,17 @@ export function Signup(): JSX.Element {
         // the user is logged in, where the remaining onboarding details (incl.
         // amputation type) are collected.
       })
-      .catch(() => setErrors({ email: 'ההרשמה נכשלה, נסה/י שוב' }))
+      .catch((err: unknown) => {
+        const status = (err as { status?: number })?.status;
+        const msg = (err as { message?: string })?.message ?? '';
+        if (status === 429 || msg.includes('rate limit')) {
+          setErrors({ email: 'יותר מדי ניסיונות. נסה/י שוב עוד מספר דקות.' });
+        } else if (msg.includes('already registered') || msg.includes('User already registered')) {
+          setErrors({ email: 'כתובת האימייל כבר רשומה. נסה/י להתחבר.' });
+        } else {
+          setErrors({ email: 'ההרשמה נכשלה, נסה/י שוב' });
+        }
+      })
       .finally(() => setBusy(false));
   };
 
@@ -88,14 +98,13 @@ export function Signup(): JSX.Element {
         <Divider label="או הרשמה עם אימייל" />
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-          <TextField label="שם מלא" value={form.name} onChange={set('name')} placeholder="ישראל ישראלי" error={errors.name} />
+          <TextField label="שם מלא" value={form.name} onChange={set('name')} error={errors.name} />
           <TextField
             label="אימייל"
             type="email"
             ltr
             value={form.email}
             onChange={set('email')}
-            placeholder="name@email.com"
             error={errors.email}
           />
           <PasswordField
