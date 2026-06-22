@@ -1,11 +1,4 @@
-import type { z } from 'zod';
-import {
-  authResponseSchema,
-  chatResponseSchema,
-  type AuthResponseDto,
-  type ChatResponseDto,
-} from '../schemas/api';
-import type { LoginValues, SignupValues } from '../schemas/forms';
+import { chatResponseSchema, type ChatResponseDto } from '../schemas/api';
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? '/api';
 
@@ -19,21 +12,24 @@ export class ApiError extends Error {
   }
 }
 
-/**
- * POSTs JSON and validates the response against `schema`. Throws ApiError on a
- * non-OK status or a response that does not match the expected shape.
- */
-async function postJson<Schema extends z.ZodType>(
-  path: string,
-  body: unknown,
-  schema: Schema,
-): Promise<z.infer<Schema>> {
+/** Pulls a human-readable message out of the backend error body, if present. */
+function errorMessage(data: unknown, fallback: string): string {
+  if (data && typeof data === 'object') {
+    const record = data as Record<string, unknown>;
+    if (typeof record.message === 'string') return record.message;
+    if (typeof record.error === 'string') return record.error;
+  }
+  return fallback;
+}
+
+/** Sends a question to the chatbot proxy. `profile` is a short English context summary. */
+export async function sendChat(message: string, profile?: string): Promise<ChatResponseDto> {
   let response: Response;
   try {
-    response = await fetch(`${API_BASE}${path}`, {
+    response = await fetch(`${API_BASE}/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+      body: JSON.stringify({ message, profile }),
     });
   } catch {
     throw new ApiError('לא ניתן להתחבר לשרת', 0);
@@ -42,24 +38,14 @@ async function postJson<Schema extends z.ZodType>(
   const data: unknown = await response.json().catch(() => null);
 
   if (!response.ok) {
-    throw new ApiError('הבקשה נכשלה', response.status);
+    throw new ApiError(errorMessage(data, 'הבקשה נכשלה'), response.status);
   }
 
-  const parsed = schema.safeParse(data);
+  const parsed = chatResponseSchema.safeParse(data);
   if (!parsed.success) {
     throw new ApiError('תשובת השרת אינה תקינה', response.status);
   }
   return parsed.data;
 }
 
-export const api = {
-  sendChat(message: string): Promise<ChatResponseDto> {
-    return postJson('/chat', { message }, chatResponseSchema);
-  },
-  login(values: LoginValues): Promise<AuthResponseDto> {
-    return postJson('/auth/login', values, authResponseSchema);
-  },
-  signup(values: SignupValues): Promise<AuthResponseDto> {
-    return postJson('/auth/signup', values, authResponseSchema);
-  },
-};
+export const api = { sendChat };

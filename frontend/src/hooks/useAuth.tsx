@@ -10,6 +10,8 @@ export interface UserProfile {
   cause?: string | null;
   insurer?: string | null;
   prosthetic?: string | null;
+  base_disability_percentage?: number | null;
+  gender?: string | null;
   phone?: string | null;
 }
 

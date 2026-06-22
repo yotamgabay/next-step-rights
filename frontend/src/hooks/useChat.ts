@@ -1,11 +1,13 @@
-import { useCallback, useRef, useState } from 'react';
-import { api } from '../api/client';
+import { useCallback, useState } from 'react';
+import { api, ApiError } from '../api/client';
 import { CHAT_GREETING } from '../data/answers';
 import { topics } from '../data/topics';
+import { useAuth, type UserProfile } from './useAuth';
 import type { ChatMessage, TopicId } from '../types';
 
-const ERROR_REPLY =
+const GENERIC_ERROR =
   'מצטערים, אירעה תקלה זמנית בעוזר הדיגיטלי. אפשר לנסות שוב או להתקשר אלינו לקבלת מענה אנושי.';
+const EMPTY_REPLY = 'לא התקבלה תשובה. נסה/י לנסח את השאלה מעט אחרת.';
 
 export interface UseChat {
   messages: ChatMessage[];
@@ -14,16 +16,32 @@ export interface UseChat {
   sendCategory: (topicId: TopicId) => void;
 }
 
-/** Manages the chat transcript, the typing indicator and the backend round-trip. */
+/**
+ * Builds a compact English summary of the user's profile to give the bot
+ * context. Kept short (DB enum values are already English) so the server can
+ * fit it within the upstream char limit.
+ */
+function summarizeProfile(profile: UserProfile | null): string | undefined {
+  if (!profile) return undefined;
+  const parts: string[] = [];
+  if (profile.cause) parts.push(`cause:${profile.cause}`);
+  if (profile.base_disability_percentage != null) {
+    parts.push(`disability:${profile.base_disability_percentage}%`);
+  }
+  if (profile.prosthetic) parts.push(`prosthetic:${profile.prosthetic}`);
+  if (profile.age != null) parts.push(`age:${profile.age}`);
+  if (profile.gender) parts.push(`sex:${profile.gender}`);
+  return parts.length > 0 ? parts.join(',') : undefined;
+}
+
+/**
+ * Manages the chat transcript and the round-trip to the backend chatbot proxy.
+ * A short English profile summary is forwarded so the bot answers in context.
+ */
 export function useChat(): UseChat {
+  const { profile } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([{ role: 'bot', text: CHAT_GREETING }]);
   const [typing, setTyping] = useState(false);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const pushBot = useCallback((text: string) => {
-    setMessages((prev) => [...prev, { role: 'bot', text }]);
-    setTyping(false);
-  }, []);
 
   const send = useCallback(
     (text: string) => {
@@ -32,22 +50,23 @@ export function useChat(): UseChat {
       setMessages((prev) => [...prev, { role: 'user', text: trimmed }]);
       setTyping(true);
       api
-        .sendChat(trimmed)
-        .then((res) => pushBot(res.reply))
-        .catch(() => pushBot(ERROR_REPLY));
+        .sendChat(trimmed, summarizeProfile(profile))
+        .then((res) => {
+          setMessages((prev) => [...prev, { role: 'bot', text: res.reply || EMPTY_REPLY }]);
+        })
+        .catch((err: unknown) => {
+          const text = err instanceof ApiError ? err.message : GENERIC_ERROR;
+          setMessages((prev) => [...prev, { role: 'bot', text }]);
+        })
+        .finally(() => setTyping(false));
     },
-    [pushBot],
+    [profile],
   );
 
+  // Category chips ask the chatbot a real question about the chosen topic.
   const sendCategory = useCallback(
-    (topicId: TopicId) => {
-      const topic = topics[topicId];
-      setMessages((prev) => [...prev, { role: 'user', text: `אשמח לדעת על: ${topic.title}` }]);
-      setTyping(true);
-      if (timer.current) clearTimeout(timer.current);
-      timer.current = setTimeout(() => pushBot(topic.chatIntro), 500);
-    },
-    [pushBot],
+    (topicId: TopicId) => send(`אשמח לדעת על ${topics[topicId].title}`),
+    [send],
   );
 
   return { messages, typing, send, sendCategory };

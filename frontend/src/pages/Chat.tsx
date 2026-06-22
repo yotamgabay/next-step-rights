@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, type JSX } from 'react';
 import { useLocation } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import { z } from 'zod';
+import { ChatDisclaimer } from '../components/ChatDisclaimer';
 import { ChatIcon, PhoneIcon, SendIcon } from '../components/icons';
 import { quickQuestions } from '../data/answers';
 import { causeIds, topics } from '../data/topics';
@@ -30,7 +32,21 @@ function Bubble({ message }: { message: ChatMessage }): JSX.Element {
           lineHeight: 1.55,
         }}
       >
-        {message.text}
+        {bot ? (
+          <div className="md">
+            <ReactMarkdown
+              components={{
+                a: ({ node: _node, ...props }) => (
+                  <a {...props} target="_blank" rel="noreferrer noopener" />
+                ),
+              }}
+            >
+              {message.text}
+            </ReactMarkdown>
+          </div>
+        ) : (
+          message.text
+        )}
       </div>
     </div>
   );
@@ -87,6 +103,7 @@ export function Chat(): JSX.Element {
 
   const submit = (e: React.FormEvent): void => {
     e.preventDefault();
+    if (typing) return; // ignore while a request is in flight
     send(input);
     setInput('');
   };
@@ -124,7 +141,9 @@ export function Chat(): JSX.Element {
             <ChatIcon size={26} color={colors.white} />
           </span>
           <div style={{ flex: 1, minWidth: 160 }}>
-            <div style={{ fontSize: 19, fontWeight: 700, color: colors.darkBlue }}>העוזר הדיגיטלי</div>
+            <h1 style={{ fontSize: 19, fontWeight: 700, color: colors.darkBlue, margin: 0 }}>
+              העוזר הדיגיטלי
+            </h1>
             <div style={{ fontSize: 15, color: colors.textFaint }}>
               עונה על שאלות בנושא זכויות קטועי גפיים
             </div>
@@ -230,12 +249,13 @@ export function Chat(): JSX.Element {
             border: `1.5px solid ${colors.blueTintBorder}`,
             borderRadius: 18,
             padding: 9,
-            boxShadow: '0 8px 26px rgba(13,61,94,.12)',
+            boxShadow: '0 4px 16px rgba(13,61,94,.10)',
           }}
         >
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            maxLength={150}
             aria-label="כתיבת שאלה לעוזר הדיגיטלי"
             placeholder="כתוב/כתבי את השאלה שלך כאן…"
             style={{
@@ -252,6 +272,8 @@ export function Chat(): JSX.Element {
           />
           <button
             type="submit"
+            disabled={typing}
+            aria-busy={typing}
             style={{
               flex: 'none',
               height: 50,
@@ -262,16 +284,27 @@ export function Chat(): JSX.Element {
               color: colors.white,
               fontSize: 17,
               fontWeight: 700,
-              cursor: 'pointer',
+              cursor: typing ? 'default' : 'pointer',
+              opacity: typing ? 0.85 : 1,
               display: 'inline-flex',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: 8,
+              minWidth: 96,
             }}
           >
-            <SendIcon size={20} color={colors.white} />
-            שליחה
+            {typing ? (
+              <span className="spinner" aria-label="ממתין לתשובה" />
+            ) : (
+              <>
+                <SendIcon size={20} color={colors.white} />
+                שליחה
+              </>
+            )}
           </button>
         </form>
+
+        <ChatDisclaimer />
 
         <div
           style={{

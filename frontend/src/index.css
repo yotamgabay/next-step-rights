@@ -46,7 +46,26 @@ body {
 }
 
 ::placeholder {
-  color: #aaaaaa;
+  color: #737373;
+  opacity: 1; /* Firefox dims placeholders by default; keep our AA-checked value. */
+}
+
+/* Skip link: hidden until keyboard focus, then pinned top-start (RTL-aware). */
+.skip-link {
+  position: absolute;
+  inset-inline-start: 12px;
+  top: -56px;
+  z-index: 100;
+  background: var(--primary-blue);
+  color: #fff;
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: top 0.15s ease;
+}
+.skip-link:focus {
+  top: 12px;
 }
 
 button,
@@ -59,6 +78,73 @@ select {
   outline: 3px solid var(--primary-blue);
   outline-offset: 2px;
   border-radius: 6px;
+}
+
+/* Markdown rendered in chat bubbles — tight, RTL-aware spacing. */
+.md > :first-child {
+  margin-top: 0;
+}
+.md > :last-child {
+  margin-bottom: 0;
+}
+.md p {
+  margin: 0 0 8px;
+}
+.md ul,
+.md ol {
+  margin: 6px 0;
+  padding-inline-start: 22px;
+}
+.md li {
+  margin: 2px 0;
+}
+.md h1,
+.md h2,
+.md h3 {
+  margin: 10px 0 6px;
+  font-size: 1.05em;
+}
+.md a {
+  color: #1e7fc3;
+  word-break: break-word;
+}
+.md strong {
+  font-weight: 700;
+}
+.md code {
+  background: rgba(0, 0, 0, 0.06);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+.md pre {
+  background: rgba(0, 0, 0, 0.06);
+  padding: 10px 12px;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+.md blockquote {
+  margin: 6px 0;
+  padding-inline-start: 12px;
+  border-inline-start: 3px solid #d6e3ef;
+  color: #555;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Inline spinner shown on the send button while awaiting the chatbot. */
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-top-color: #fff;
+  animation: spin 0.7s linear infinite;
 }
 
 @keyframes blink {

@@ -2,6 +2,7 @@ import { useState, type JSX } from 'react';
 import { EligibleRights } from '../components/EligibleRights';
 import { useNavigate } from 'react-router-dom';
 import { CardButton, DetailsArrow, Tag } from '../components/Card';
+import { ChatDisclaimer } from '../components/ChatDisclaimer';
 import {
   CardIcon,
   CheckCircleIcon,
@@ -222,12 +223,13 @@ export function Home(): JSX.Element {
               border: `1.5px solid ${colors.blueTintBorder}`,
               borderRadius: 18,
               padding: 9,
-              boxShadow: '0 8px 26px rgba(13,61,94,.10)',
+              boxShadow: '0 4px 16px rgba(13,61,94,.08)',
             }}
           >
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
+              maxLength={150}
               aria-label="כתיבת שאלה לעוזר הדיגיטלי"
               placeholder="לדוגמה: איך מגישים בקשה לפרוטזה?"
               style={{
@@ -261,12 +263,13 @@ export function Home(): JSX.Element {
               }}
             >
               <SendIcon size={20} color={colors.white} />
-              שליחה
+              תן לי יד
             </button>
           </form>
           <p style={{ fontSize: 15, color: colors.textFaint, margin: '14px 0 0' }}>
             אפשר גם לבחור נושא מהרשימה למטה
           </p>
+          <ChatDisclaimer style={{ margin: '8px auto 0', maxWidth: 560 }} />
         </div>
       </section>
 

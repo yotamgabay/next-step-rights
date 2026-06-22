@@ -265,7 +265,7 @@ export function PrimaryButton({
         height: 56,
         border: 'none',
         borderRadius: 28,
-        background: busy ? colors.placeholder : colors.primaryBlue,
+        background: busy ? colors.disabledControl : colors.primaryBlue,
         color: colors.white,
         fontSize: 18,
         fontWeight: 700,

@@ -114,7 +114,7 @@ function ContinueButton({ disabled, onClick }: { disabled: boolean; onClick: () 
         height: 52,
         border: 'none',
         borderRadius: 26,
-        background: disabled ? colors.placeholder : colors.primaryBlue,
+        background: disabled ? colors.disabledControl : colors.primaryBlue,
         color: colors.white,
         fontSize: 17,
         fontWeight: 700,
