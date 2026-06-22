@@ -128,12 +128,30 @@ export function Tracker(): JSX.Element {
   }
 
   async function deleteTask(taskId: string): Promise<void> {
+    const task = tasks.find((t) => t.id === taskId);
     const prev = tasks;
-    setTasks((ts) => ts.filter((t) => t.id !== taskId));
+    const remaining = tasks.filter((t) => t.id !== taskId);
+    setTasks(remaining);
+
     const { error } = await supabase.from('user_tasks').delete().eq('id', taskId);
     if (error) {
       console.error('Error deleting task:', error);
       setTasks(prev); // revert
+      return;
+    }
+
+    // Deleting the last task under a right means the user is no longer working
+    // on it — drop the tracked-right row so the board/accordion stays clean.
+    if (task && !remaining.some((t) => t.tracked_right_id === task.tracked_right_id)) {
+      const { error: untrackErr } = await supabase
+        .from('user_tracked_rights')
+        .delete()
+        .eq('id', task.tracked_right_id);
+      if (untrackErr) {
+        console.error('Error untracking right:', untrackErr);
+      } else {
+        setTrackedRights((rs) => rs.filter((r) => r.id !== task.tracked_right_id));
+      }
     }
   }
 
@@ -440,9 +458,16 @@ function AddTaskBar({
   const [rightId, setRightId] = useState(trackedRights[0]?.id ?? '');
   const [title, setTitle] = useState('');
 
+  // If the selected right was untracked (its last task deleted) the saved id no
+  // longer exists — fall back to the first available right so we never submit a
+  // dangling tracked_right_id.
+  const effectiveRightId = trackedRights.some((r) => r.id === rightId)
+    ? rightId
+    : trackedRights[0]?.id ?? '';
+
   const submit = (): void => {
-    if (!rightId || !title.trim()) return;
-    onAddTask(rightId, title);
+    if (!effectiveRightId || !title.trim()) return;
+    onAddTask(effectiveRightId, title);
     setTitle('');
   };
 
@@ -469,7 +494,7 @@ function AddTaskBar({
       </label>
       <select
         id="add-task-right"
-        value={rightId}
+        value={effectiveRightId}
         onChange={(e) => setRightId(e.target.value)}
         style={{
           minHeight: 44,

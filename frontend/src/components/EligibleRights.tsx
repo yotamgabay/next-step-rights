@@ -62,12 +62,13 @@ function AddToTrackerButton({
         onMouseLeave={() => setHover(false)}
         onFocus={() => setHover(true)}
         onBlur={() => setHover(false)}
+        aria-label="כבר במעקב — מעבר למעקב"
         style={{
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 8,
+          gap: 6,
           minHeight: 44,
-          padding: '12px 18px',
+          padding: '12px 14px',
           border: `1.5px solid ${colors.green}`,
           borderRadius: 24,
           background: hover ? colors.greenTint : colors.white,
@@ -79,7 +80,7 @@ function AddToTrackerButton({
         }}
       >
         <TrackerIcon size={18} color={colors.green} />
-        כבר במעקב ← למעקב
+        במעקב
       </button>
     );
   }
